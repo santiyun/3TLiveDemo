@@ -335,7 +335,7 @@ int CDialog2::joinChannel()
 
 		//std::string value;
 		//std::string s_utf8 = ws_techapi::s2utf8("不替换");
-		std::string s_pushurl = "rtmp:\/\/push.3ttech.cn\/sdk\/";
+		std::string s_pushurl = "rtmp:\/\/pushjs.3ttech.cn\/sdk\/";
 		s_pushurl.append(g_LocalUser.m_roomID);
 
 
@@ -1451,7 +1451,7 @@ void CDialog2::OnClickedBtnPushScreen()
 		m_screen_height = value;
 		int height = stringToll(value);
 
-		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"推流地址", "rtmp:\/\/push.3ttech.cn\/sdk\/123454321", value)); //rtmp:\/\/push.3ttech.cn\/sdk\/123454321
+		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"推流地址", "rtmp:\/\/pushjs.3ttech.cn\/sdk\/123454321", value)); //rtmp:\/\/push.3ttech.cn\/sdk\/123454321
 	    std::string s_push_url = value;
 		AV_PUSH_TYPE recordtype;
 
