@@ -76,12 +76,13 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>TTTRtcSDK.lib;wsaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TTTRtcSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\3ttech;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile />
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\Debug\*.exe  ..\3ttech</Command>
@@ -116,7 +117,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>wsaudio.lib;TTTRtcSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>TTTRtcSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\3ttech</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -133,6 +134,7 @@
     <ClCompile Include="Dialog2.cpp" />
     <ClCompile Include="DialogAnchorLink.cpp" />
     <ClCompile Include="DlgServerOption.cpp" />
+    <ClCompile Include="InputBox.cpp" />
     <ClCompile Include="LiveChatDlg.cpp" />
     <ClCompile Include="LocalSetting.cpp" />
     <ClCompile Include="MicphoneTestDlg.cpp" />
@@ -161,6 +163,7 @@
     <ClInclude Include="Dialog2.h" />
     <ClInclude Include="DialogAnchorLink.h" />
     <ClInclude Include="DlgServerOption.h" />
+    <ClInclude Include="InputBox.h" />
     <ClInclude Include="LiveChatDlg.h" />
     <ClInclude Include="LocalSetting.h" />
     <ClInclude Include="MicphoneTestDlg.h" />

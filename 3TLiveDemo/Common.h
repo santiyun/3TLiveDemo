@@ -18,6 +18,13 @@ bool isdigit(std::string strValue);
 #define WM_ON_MP4_JOINED				WM_USER+209
 #define WM_ON_AUDIO_VOLUME_REPORT		WM_USER+210
 #define WM_ON_MIXERVIDEO_CREATE			WM_USER+211
+#define WM_ON_REMOTE_AUDIO_STATS		WM_USER+212
+#define WM_ON_RTMP_SENDERROR		    WM_USER+213
+#define WM_ON_EFFECTFINISHED		    WM_USER+214
+
+
+
+
 
 
 enum LiveStatus

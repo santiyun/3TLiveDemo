@@ -32,4 +32,8 @@ public:
 	BOOL m_bUserHighQualityAudio;
 	afx_msg void OnBnClickedCheck1();
 	CButton m_chkUseHighQualityAudio;
+	int m_bitrate;
+	int m_framerate;
+	afx_msg void OnEnKillfocusEdit2();
+	afx_msg void OnEnKillfocusEdit3();
 };

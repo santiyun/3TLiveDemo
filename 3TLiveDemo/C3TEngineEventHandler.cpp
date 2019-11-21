@@ -66,7 +66,7 @@ void C3TEngineEventHandler::onMixerVideoCreate(const char *mediaID)
 }
 
 
-void C3TEngineEventHandler::onAudioVolumeIndication(int64_t nUserID, int audioLevel, int audioLevelFullRange)
+void C3TEngineEventHandler::onAudioVolumeIndication(AudioLevelInfo* info)
 {
 	//LPAGE_AUDIO_VOLUME_INDICATION lpData = new AGE_AUDIO_VOLUME_INDICATION;
 
@@ -77,7 +77,7 @@ void C3TEngineEventHandler::onAudioVolumeIndication(int64_t nUserID, int audioLe
 	//lpData->totalVolume = audioLevel;
 
 	if (m_hMainWnd != NULL)
-		::PostMessage(m_hMainWnd, WM_ON_AUDIO_VOLUME_REPORT, (WPARAM)nUserID, audioLevel);
+		::PostMessage(m_hMainWnd, WM_ON_AUDIO_VOLUME_REPORT, (WPARAM)0, info->local_level);
 
 }
 void C3TEngineEventHandler::onLeaveChannel(RtcErrorCode reason)
@@ -224,13 +224,23 @@ void C3TEngineEventHandler::onRemoteVideoStats(const RemoteVideoStats& stats)
 		::PostMessage(m_hMainWnd, WM_ON_REMOTE_VIDEO_STATS, (WPARAM)lpdata, 0);
 }
 
+void C3TEngineEventHandler::onRemoteAudioStats(const RemoteAudioStats & stats)
+{
+	RemoteAudioStats *lpdata = new RemoteAudioStats;
+
+	memcpy(lpdata, &stats, sizeof(RemoteAudioStats));
+
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_REMOTE_AUDIO_STATS, (WPARAM)lpdata, 0);
+}
+
 void C3TEngineEventHandler::onConnectionLost()
 {
 	if (m_hMainWnd != NULL)
 		::PostMessage(m_hMainWnd, WM_ON_CONNECTLOST, 0, 0);
 }
 
-void C3TEngineEventHandler::onUserEnableVideo(int64_t userID, const char *mediaID, bool enabled)
+void C3TEngineEventHandler::onUserEnableVideo(int64_t userID, const char *mediaID, int mediaType, bool enabled)
 {
 	//TODO   user video enable tatus change 
 	std::string mid = mediaID;
@@ -279,21 +289,48 @@ void C3TEngineEventHandler::OnChatMessageRecived(long nSrcUserID, int type, cons
 //{
 //
 //}
-void C3TEngineEventHandler::OnOtherAnchorLink(long long roomID, long long operUserID)
+void C3TEngineEventHandler::onOtherAnchorLink(long long roomID, long long operUserID)
+{
+
+
+}
+
+void C3TEngineEventHandler::onOtherAnchorLinked(long long roomID, long long operUserID, const char* operDevID, int nError)
 {
 
 }
-void C3TEngineEventHandler::OnOtherAnchorLinked(long long roomID, long long operUserID, const char* operDevID, int nError)
+void C3TEngineEventHandler::onOtherAnchorUnlink(long long roomID, long long operUserID, int nError)
 {
 
 }
-void C3TEngineEventHandler::OnOtherAnchorUnlink(long long roomID, long long operUserID, int nError)
+void C3TEngineEventHandler::onOtherAnchorUnLinked(long long roomID, long long operUserID)
 {
-
 }
-void C3TEngineEventHandler::OnOtherAnchorUnLinked(long long roomID, long long operUserID)
-{
 
+void C3TEngineEventHandler::onSetSEI(const char* SEI)
+{
+	//if (m_hMainWnd != NULL)
+	//	::PostMessage(m_hMainWnd, WM_ON_REMOTE_VIDEO_STATS, (WPARAM)0, 0);
+}
+void C3TEngineEventHandler::onRTMPsenderror(const char * err)
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_RTMP_SENDERROR, (WPARAM)0, 0);
+}
+void C3TEngineEventHandler::onAudioEffectFinished(int id)
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_EFFECTFINISHED, (WPARAM)id, 0);
+	//
+}
+void C3TEngineEventHandler::onRequestChannelKey()
+{
+	//
+	{
+		char szDbg[128];
+		sprintf_s(szDbg, "@@@ 2019-10-25  onRequestChannelKey\n");
+		OutputDebugStringA(szDbg);
+	}
 }
 //void C3TEngineEventHandler::OnUserH264Push(const char* data, int len, const char* devId, long long ts, int width, int height, VideoFrameType_TTT frameType)
 //{

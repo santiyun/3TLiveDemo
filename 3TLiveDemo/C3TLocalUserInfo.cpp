@@ -8,7 +8,7 @@ C3TLocalUserInfo::C3TLocalUserInfo()
 	m_enableVideo = true;
 	m_enableAudio =  true;
 	m_clientRole = CLIENT_ROLE_BROADCASTER;
-	m_roomID = "1231";
+	m_roomID = "987987";
 	m_hWnd = NULL;
 	srand(time(0));
 	m_uid = rand();
@@ -17,6 +17,8 @@ C3TLocalUserInfo::C3TLocalUserInfo()
 	m_pushUrl = "rtmp://push.3ttech.cn/sdk/12321";
 	m_videoProfile = 5;// VIDEO_PROFILE_120P;
 	m_bUserHighQualityAudio = true;
+	m_bitrate = 4000;
+	m_framerate = 15;
 
 	m_cbMsgHandler = NULL;
 	
@@ -31,6 +33,9 @@ C3TLocalUserInfo::C3TLocalUserInfo()
 	m_sAddress = "";
 	m_iPort = 0;// 11000; //11000
 	m_sAppID = "a967ac491e3acf92eed5e1b5ba641ab7";
+	
+	m_pushSolution = -1;
+	m_pushAudioSolution = -1;
 }
 
 

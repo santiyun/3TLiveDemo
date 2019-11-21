@@ -37,6 +37,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnKillfocusEditRoomid();
 	CString m_sRoomID;
+	CString m_sVer;
 	afx_msg void OnBnClickedRadioM();
 	//  用户类型，主播，副播，观众//  用户类型，主播，副播，观众
 	int m_ClientRole;

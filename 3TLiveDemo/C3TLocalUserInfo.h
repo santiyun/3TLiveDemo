@@ -20,6 +20,8 @@ public:
 	std::string m_pushUrl;
 	int m_videoProfile;
 	bool m_bUserHighQualityAudio;
+	int m_bitrate;
+	int m_framerate;
 
 	HWND m_cbMsgHandler;
 
@@ -38,7 +40,8 @@ public:
 	int m_iPort;
 	std::string m_sAppID;
 
-
+	int m_pushSolution;
+	int m_pushAudioSolution;
 
 };
 

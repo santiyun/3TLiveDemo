@@ -107,11 +107,18 @@ void CMySetting::OnTcnSelchangeTabsetting(NMHDR *pNMHDR, LRESULT *pResult)
 void CMySetting::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(true);
 	g_LocalUser.m_videoProfile = m_dlgLocalSetting.m_videoResolution;
 	g_LocalUser.m_bUserHighQualityAudio = m_dlgLocalSetting.m_bUserHighQualityAudio;
 	g_LocalUser.m_iPort = m_dlgServer.m_iPort;
+	if (m_dlgServer.m_csAddr != "")
+		MessageBox(m_dlgServer.m_csAddr, "服务器地址", MB_OK);
 	g_LocalUser.m_sAddress = m_dlgServer.m_csAddr;
 	g_LocalUser.m_sAppID = m_dlgServer.m_csAppID;
+	g_LocalUser.m_bitrate = m_dlgLocalSetting.m_bitrate;
+	g_LocalUser.m_framerate = m_dlgLocalSetting.m_framerate;
+	g_LocalUser.m_pushSolution = m_dlgPushSetting.m_comboindex;
+	g_LocalUser.m_pushAudioSolution = m_dlgPushSetting.m_comboAudioIndex;
 	if ( g_TTTEngine != NULL )
 		g_TTTEngine->setAppID(g_LocalUser.m_sAppID.c_str());
 	CDialogEx::OnOK();

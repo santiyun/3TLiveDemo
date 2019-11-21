@@ -20,8 +20,10 @@
 #endif
 
 IRtcEngine* g_TTTEngine = NULL;
+IRtcPlayer* mPlayer;
 C3TEngineEventHandler g_3TEngineEventHandler; 
 C3TLocalUserInfo g_LocalUser;
+typedef int(*WSInstallCrashRpt)(LPCWSTR AppName, LPCWSTR AppVersion);
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -74,6 +76,8 @@ void CMy3TLiveDemoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_ROOMID, m_sRoomID);
 	//  DDX_Radio(pDX, IDC_RADIO_M, m_radClientRole);
 	//  DDV_MinMaxInt(pDX, m_radClientRole, 1, 3);
+	DDX_Text(pDX, IDC_STATIC_VER, m_sVer);
+
 	DDX_Radio(pDX, IDC_RADIO_M, m_ClientRole);
 	DDV_MinMaxInt(pDX, m_ClientRole, 0, 2);
 }
@@ -132,6 +136,19 @@ BOOL CMy3TLiveDemoDlg::OnInitDialog()
 	RtcEngineContext context;
 	g_TTTEngine = IRtcEngine::createInstance();
 	//return TRUE;
+
+
+	HINSTANCE m_phDLLHdl = NULL;
+	m_phDLLHdl = LoadLibrary("WS_CrashRpt1403.dll");  //加载 DLL文件  
+	if (m_phDLLHdl) {
+		WSInstallCrashRpt myCrashRpt = (WSInstallCrashRpt)GetProcAddress(m_phDLLHdl, "WSInstallCrashRpt");
+		std::wstring version = L"Ver: "; 
+		std::wstring sdk_ver = ws_techapi::utf82ws(g_TTTEngine->getVersion());
+		version.append(sdk_ver.c_str());
+		m_sVer = version.c_str();
+		UpdateData(false);
+		myCrashRpt(L"3TLiveDemo", sdk_ver.c_str());
+	}
 
 
 	if (g_TTTEngine != NULL)
@@ -214,7 +231,14 @@ void CMy3TLiveDemoDlg::OnBnClickedOk()
 {
 	UpdateData(TRUE);
 
-	OnEnKillfocusEditRoomid();
+	//OnEnKillfocusEditRoomid();
+	std::string strvalue = this->m_sRoomID.GetBuffer(0);
+	if (!isdigit(strvalue) || ("" == strvalue)) {
+		MessageBox(strvalue.data(), "请输入正确的数字！");
+		return;
+	}
+	else
+		g_LocalUser.m_roomID = strvalue;
 
 	CDialog2 dlg;
 	dlg.m_bJoinChannel = true;
@@ -262,11 +286,6 @@ void CMy3TLiveDemoDlg::OnEnKillfocusEditRoomid()
 {
 	// TODO: 校验会议id，必须是数字
 	this->UpdateData(TRUE);
-	std::string strvalue = this->m_sRoomID.GetBuffer(0);
-	if (!isdigit(strvalue))
-		MessageBox(strvalue.data(), "请输入正确的数字！");
-	else
-		g_LocalUser.m_roomID = strvalue;
 }
 
 

@@ -8,10 +8,11 @@
 #include "C3TLocalUserInfo.h"
 #include "C3TEngineEventHandler.h"
 #include "DialogAnchorLink.h"
-
+#include "Common.h"
 #include "map"
 
 extern IRtcEngine* g_TTTEngine;
+extern IRtcPlayer* mPlayer;
 extern C3TEngineEventHandler g_3TEngineEventHandler;
 extern C3TLocalUserInfo g_LocalUser;
 
@@ -19,6 +20,7 @@ extern C3TLocalUserInfo g_LocalUser;
 // CDialog2 对话框
 
 IMPLEMENT_DYNAMIC(CDialog2, CDialog)
+const UINT WM_MYUPDATEDATA = ::RegisterWindowMessage(_T("MyUpdateData"));
 
 CDialog2::CDialog2(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_DIALOG2, pParent)
@@ -34,11 +36,19 @@ CDialog2::CDialog2(CWnd* pParent /*=NULL*/)
 	, m_Video3Info(_T(""))
 	, m_Video4Info(_T(""))
 	, m_Video5Info(_T(""))
+
+	, m_Audio0Info(_T(""))
+	, m_Audio2Info(_T(""))
+	, m_Audio3Info(_T(""))
+	, m_Audio4Info(_T(""))
+	, m_Audio5Info(_T(""))
+
+
+	
 	, m_curSelRemoteParticipant(0)
 {
 	m_bJoinChannel = false;
 	m_bSDKTEST = false;
-	m_Status = LiveStatus::STATUS_INIT;
 	m_TotleParticipants = 0;
 	m_CurSelVideoIndex = 0;
 
@@ -48,7 +58,10 @@ CDialog2::CDialog2(CWnd* pParent /*=NULL*/)
 	memset(m_ClientVideoStreamMute, 0, sizeof(m_ClientVideoStreamMute));
 	_CrtSetBreakAlloc(152);
 	m_sharedata = false;
+	m_pushscreen = false;
 	m_secondMedia = "";
+	m_screen_width = "1080";
+	m_screen_height = "720";
 }
 long long stringToll(const std::string& strValue)
 {
@@ -56,6 +69,8 @@ long long stringToll(const std::string& strValue)
 	sscanf(strValue.c_str(), "%lld", &nValue);
 	return nValue;
 }
+
+
 CDialog2::~CDialog2()
 {
 }
@@ -91,19 +106,49 @@ void CDialog2::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_VIDEO_TEXT3, m_Video3Info);
 	DDX_Text(pDX, IDC_STATIC_VIDEO_TEXT4, m_Video4Info);
 	DDX_Text(pDX, IDC_STATIC_VIDEO_TEXT5, m_Video5Info);
+	DDX_Text(pDX, IDC_STATIC_AUDIO_TEXT1, m_Audio0Info);
+	DDX_Text(pDX, IDC_STATIC_AUDIO_TEXT2, m_Audio2Info);
+	DDX_Text(pDX, IDC_STATIC_AUDIO_TEXT3, m_Audio3Info);
+	DDX_Text(pDX, IDC_STATIC_AUDIO_TEXT4, m_Audio4Info);
+	DDX_Text(pDX, IDC_STATIC_AUDIO_TEXT5, m_Audio5Info);
 	DDX_Control(pDX, IDC_BTN_MUTE_REMOTE_AUDIO, m_btnMuteRemoteAudio);
+	DDX_Control(pDX, IDC_BTN_MUTE_ALL_REMOTE_AUDIO, m_btnMuteAllRemoteAudio);
+	DDX_Control(pDX, IDC_BTN_AUDIOEFFECT1, m_btnAudioEffect1);
+	DDX_Control(pDX, IDC_BTN_AUDIOEFFECT2, m_btnAudioEffect2);
+	DDX_Control(pDX, IDC_BTN_AUDIOEFFECT3, m_btnAudioEffect3);
+	DDX_Control(pDX, IDC_BTN_AUDIOEFFECT4, m_btnAudioEffect4);
+	DDX_Control(pDX, IDC_BTN_AUDIOEFFECT5, m_btnAudioEffect5);
+
+
 	DDX_Control(pDX, IDC_BTN_KICK_OUT, m_btnKickOut);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_SPEAKER, m_btnMuteUnmuteSpeaker);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_MIC, m_btnMuteUnmuteMic);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_CAMERA, m_btnMuteUnmuteCamera);
 	DDX_Control(pDX, IDC_BTN_MP4_PLAY, m_btnPlayMp4);
+	DDX_Control(pDX, IDC_BTN_PUSHCREEN, m_btnPushScreen);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_NETSTAT, m_btnShowNetStat);
-	DDX_Control(pDX, IDC_BTN_UPGRADE_CLIENTROLE, m_btnUpgradeClientrole);
+	DDX_Control(pDX, IDC_BTN_UPGRADE_CLIENTROLE2, m_btnUpgradeClientrole);
 	DDX_Radio(pDX, IDC_RADIO7, m_curSelRemoteParticipant);
 	DDX_Control(pDX, IDC_STATIC_MP4, m_ShowMp4);
 	DDX_Control(pDX, IDC_BTN_AnchorLink, m_btnAnchorLink);
 	DDX_Control(pDX, IDC_SLIDER_MICVOLUME, m_sliderMicVolume);
 	DDX_Control(pDX, IDC_SLIDER_MICVOLUME2, m_sliderSpeakerVolume);
+	DDX_Control(pDX, IDC_SLIDER_USER_VOLUME, m_sliderUserVolume);
+	DDX_Control(pDX, IDC_SLIDER_MIX_VOLUME, m_sliderMixVolume);
+	DDX_Control(pDX, IDC_SLIDER_EARBACK_VOLUME, m_sliderEarbackVolume);
+	DDX_Control(pDX, IDC_SLIDER_LOACAL_VOLUME, m_sliderLocalVolume);
+	DDX_Control(pDX, IDC_SLIDER_PLAYOUTVOLUME, m_sliderPlayoutVolume);
+	DDX_Control(pDX, IDC_SLIDER_PUBLISHVOLUME, m_sliderPublishVolume);	
+	DDX_Control(pDX, IDC_SLIDER_SEEK, m_sliderSeek);
+	DDX_Control(pDX, IDC_SLIDER_MP3_VOL, m_sliderMp3Vol);
+	DDX_Control(pDX, IDC_SLIDER_MP3_SEEK, m_sliderMp3Seek);
+	DDX_Control(pDX, IDC_SLIDER_MP3_PUSHVOL, m_sliderMp3PushVol);
+
+	
+
+	
+
+	
 }
 
 int CDialog2::joinChannel()
@@ -111,7 +156,6 @@ int CDialog2::joinChannel()
 	int nReponse = 0;
 	if (g_TTTEngine != NULL)
 	{
-		m_Status = LiveStatus::STATUS_JOINING;
 		
 		g_TTTEngine->setChannelProfile(g_LocalUser.m_channelProfile);
 
@@ -119,18 +163,34 @@ int CDialog2::joinChannel()
 			g_TTTEngine->enableVideo();
 		g_TTTEngine->setClientRole(g_LocalUser.m_clientRole, NULL);
 
-		g_TTTEngine->setHighQualityAudioParameters(g_LocalUser.m_bUserHighQualityAudio);
+
+		//2019-6-24
+		//g_TTTEngine->setHighQualityAudioParameters(g_LocalUser.m_bUserHighQualityAudio);
+		if (g_LocalUser.m_bUserHighQualityAudio) {
+			g_TTTEngine->SetPreferAudioCodec(AUDIOCODEC::CODEC_AAC, 96,2);
+		}
+		else
+		{
+			g_TTTEngine->SetPreferAudioCodec(AUDIOCODEC::CODEC_ISAC_UWB, 24, 2);
+		}
+
 		int roomid = stringToll(g_LocalUser.m_roomID.c_str());
 		//59.110.220.79 iplocation 端口 11000
 		//g_TTTEngine->setServerAddr("47.106.248.181", 5000);
 		//g_TTTEngine->setServerAddr("edu.3ttech.cn", 11000);
 
-		if ( g_LocalUser.m_sAddress != "")
+		if (g_LocalUser.m_sAddress != "") {
 			g_TTTEngine->setServerAddr(g_LocalUser.m_sAddress.c_str(), g_LocalUser.m_iPort);
-		PublisherConfig cfg;
-		memset(cfg.publishUrl, 0, 1024);
-		memcpy(cfg.publishUrl, g_LocalUser.m_pushUrl.c_str(), g_LocalUser.m_pushUrl.length());
-		//g_TTTEngine->configPublisher(cfg);
+		}
+		else
+		{
+			//g_TTTEngine->setServerAddr("139.9.83.45", 25000);
+			//g_TTTEngine->setServerAddr("114.116.67.191", 25000);
+
+			
+		}
+
+
 		g_TTTEngine->setVideoMixerBackgroundImgUrl("http://3ttech.cn/res/tpl/default/images/bk.png");
 
 		LocalVideoConfig cfg2;
@@ -139,49 +199,56 @@ int CDialog2::joinChannel()
 		//LocalVideoConfig cfg;
 		cfg2.userID = g_LocalUser.m_uid;
 		cfg2.type = VIDEO_CAPTURE_CAMERA;
+		//cfg2.type = VIDEO_CAPTURE_SCREEN;
+		cfg2.screenRect.x = 0;
+		cfg2.screenRect.y = 0;
+		cfg2.screenRect.w = GetSystemMetrics(SM_CXSCREEN);
+		cfg2.screenRect.h = GetSystemMetrics(SM_CYSCREEN);
+		cfg2.framerate = 8;
+
 
 		switch (g_LocalUser.m_videoProfile)
 		{
 		case 0:
 			cfg2.width = 160;
 			cfg2.height = 112;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			//config.videoBitRate = 65;
 			break;
 		case 1:
 			cfg2.width = 320;
 			cfg2.height = 176;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		case 2:
 			cfg2.width = 320;
 			cfg2.height = 240;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		case 3:
 			cfg2.width = 640;
 			cfg2.height = 352;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		case 4:
 			cfg2.width = 640;
 			cfg2.height = 480;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		case 5:
 			cfg2.width = 1280;
 			cfg2.height = 720;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		case 6:
 			cfg2.width = 1920;
 			cfg2.height = 1080;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		default:
 			cfg2.width = 640;
 			cfg2.height = 480;
-			cfg2.framerate = 15;
+			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		}
 		CStatic   *pStatic = NULL;
@@ -212,11 +279,12 @@ int CDialog2::joinChannel()
 				cfg2.devIndex = 0;
 			else {
 				MessageBox("没有摄像头！", "提示", MB_OK);
-				return -1;
+				//return -1;
 			}
-
+			//cfg2.viewHwnd = (void*)(-123);
+			cfg2.bitrateKbps = 0;
 			//IVideoDevice::getInfo(0, &cfg.devInfo);
-
+			if (count > 0) {
 			char* id = g_TTTEngine->createLocalVideo(cfg2);
 			if (id) {
 				mediaID = id;
@@ -225,13 +293,72 @@ int CDialog2::joinChannel()
 			{
 				return nReponse;
 			}
-		}
-
 		m_LivingMemberArray[index].mUserID = uid;
 		m_LivingMemberArray[index].mDeviceID = mediaID.c_str();
 		//OnClickedBtnDataShare();
 
-		g_TTTEngine->joinChannel(stringToll(g_LocalUser.m_roomID.c_str()), NULL, g_LocalUser.m_uid);
+		if (g_LocalUser.m_pushSolution != -1)
+		{
+			switch (g_LocalUser.m_pushSolution) {
+			case 0:
+				g_TTTEngine->setVideoMixerParams(500, 15, 640, 480);
+				break;
+			case 1:
+				g_TTTEngine->setVideoMixerParams(1130, 15, 1280, 720);
+				break;
+			case 2:
+				g_TTTEngine->setVideoMixerParams(2080, 15, 1920, 1080);
+				break;
+			default:
+				g_TTTEngine->setVideoMixerParams(500, 15, 640, 480);
+				break;
+			}
+		}
+
+		if (g_LocalUser.m_pushAudioSolution != -1)
+		{
+			switch (g_LocalUser.m_pushAudioSolution) {
+			case 0:
+				g_TTTEngine->setAudioMixerParams(192, 48000, 1);
+				break;
+			case 1:
+				g_TTTEngine->setAudioMixerParams(192, 44100, 2);
+				break;
+			default:
+				g_TTTEngine->setAudioMixerParams(192, 48000, 1);
+				break;
+			}
+				}
+			}
+		}
+		g_TTTEngine->enableAudioVolumeIndication(1000);
+
+		//std::string value;
+		//std::string s_utf8 = ws_techapi::s2utf8("不替换");
+		std::string s_pushurl = "rtmp:\/\/push.3ttech.cn\/sdk\/";
+		s_pushurl.append(g_LocalUser.m_roomID);
+
+
+		//(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"请输入推流地址", s_pushurl, value));
+		//s_pushurl = value;
+		
+		PublisherConfig pushconfig;
+		memset(pushconfig.publishUrl, 0, 1024);
+		strcpy(pushconfig.publishUrl,s_pushurl.c_str());
+
+		g_LocalUser.m_pushUrl = s_pushurl;
+		//"rtmp://push.3ttech.cn/sdk/";
+		//g_LocalUser.m_pushUrl = g_LocalUser.m_pushUrl + g_LocalUser.m_roomID;
+
+		//PublisherConfig cfg;
+		//memset(cfg.publishUrl, 0, 1024);
+		//memcpy(cfg.publishUrl, g_LocalUser.m_pushUrl.c_str(), g_LocalUser.m_pushUrl.length());
+		//g_TTTEngine->configPublisher(cfg);
+
+		//g_TTTEngine->SetPreferAudioCodec(4, 64, 2);
+		g_TTTEngine->configPublisher(pushconfig);
+
+		g_TTTEngine->joinChannel(stringToll(g_LocalUser.m_roomID.c_str()), "", g_LocalUser.m_uid);
 	}
 	return nReponse;
 }
@@ -249,9 +376,18 @@ BEGIN_MESSAGE_MAP(CDialog2, CDialog)
 	ON_MESSAGE(WM_ON_USERJOINED, &CDialog2::OnUserOnline)
 	ON_MESSAGE(WM_ON_RTCSTATE_REP, &CDialog2::OnRtcState)
 	ON_MESSAGE(WM_ON_REMOTE_VIDEO_STATS, &CDialog2::OnRemoteVideoState)
+	ON_MESSAGE(WM_ON_REMOTE_AUDIO_STATS, &CDialog2::onRemoteAudioStats)
+
+
+	
+
 	ON_MESSAGE(WM_ON_REMOTE_USER_VIDEO_ENABLE, &CDialog2::OnRemoteVideoEnable)
 	ON_MESSAGE(WM_ON_MP4_JOINED, &CDialog2::OnMP4Joined)
 	ON_MESSAGE(WM_ON_MIXERVIDEO_CREATE, &CDialog2::OnMixerVideoCreate)
+	ON_REGISTERED_MESSAGE(WM_MYUPDATEDATA, &CDialog2::OnUpdateMyData) //OnUpdateMyData
+	ON_MESSAGE(WM_ON_RTMP_SENDERROR, &CDialog2::onRTMPsenderror)
+
+
 
 	ON_BN_CLICKED(IDC_STATIC_MAINVIDEO, &CDialog2::OnBnClickedStaticMainvideo)
 	ON_BN_DOUBLECLICKED(IDC_STATIC_MAINVIDEO, &CDialog2::OnBnDoubleclickedStaticMainvideo)
@@ -261,13 +397,15 @@ BEGIN_MESSAGE_MAP(CDialog2, CDialog)
 	ON_STN_CLICKED(IDC_STATIC_VIDEO4, &CDialog2::OnClickedStaticVideo4)
 	ON_STN_CLICKED(IDC_STATIC_VIDEO5, &CDialog2::OnClickedStaticVideo5)
 	ON_BN_CLICKED(IDC_BTN_MUTE_REMOTE_AUDIO, &CDialog2::OnClickedBtnMuteRemoteAudio)
+	ON_BN_CLICKED(IDC_BTN_MUTE_ALL_REMOTE_AUDIO, &CDialog2::OnClickedBtnMuteAllRemoteAudio)
 	ON_BN_CLICKED(IDC_BTN_MUTE_UNMUTE_CAMERA, &CDialog2::OnClickedBtnMuteUnmuteCamera)
 	ON_BN_CLICKED(IDC_BTN_MUTE_UNMUTE_MIC, &CDialog2::OnClickedBtnMuteUnmuteMic)
 	ON_BN_CLICKED(IDC_BTN_MUTE_UNMUTE_NETSTAT, &CDialog2::OnClickedBtnMuteUnmuteNetstat)
 	ON_BN_CLICKED(IDC_BTN_MUTE_UNMUTE_SPEAKER, &CDialog2::OnClickedBtnMuteUnmuteSpeaker)
-	ON_BN_CLICKED(IDC_BTN_UPGRADE_CLIENTROLE, &CDialog2::OnClickedBtnUpgradeClientrole)
+	ON_BN_CLICKED(IDC_BTN_UPGRADE_CLIENTROLE2, &CDialog2::OnClickedBtnUpgradeClientrole)
 	ON_BN_CLICKED(IDC_BTN_KICK_OUT, &CDialog2::OnClickedBtnKickOut)
 	ON_BN_CLICKED(IDC_BTN_MP4_PLAY, &CDialog2::OnClickedBtnMp4Play)
+	ON_BN_CLICKED(IDC_BTN_PUSHCREEN, &CDialog2::OnClickedBtnPushScreen)
 	ON_BN_CLICKED(IDC_BUTTON3, &CDialog2::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CDialog2::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BTN_AnchorLink, &CDialog2::OnClickedBtnAnchorlink)
@@ -278,6 +416,16 @@ BEGIN_MESSAGE_MAP(CDialog2, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_SETSEI, &CDialog2::OnClickedBtnDataShare)
 	ON_BN_CLICKED(IDC_BTN_2_CAMERA, &CDialog2::OnBnClickedBtn2Camera)
+	ON_BN_CLICKED(IDC_BTN_2_WATERMARK, &CDialog2::OnBnClickedSetWaterMark)
+	ON_BN_CLICKED(IDC_BTN_2_AUDIOEARBACK, &CDialog2::OnBnClickedSetEarBack)
+
+	ON_BN_CLICKED(IDC_BTN_MUTE_ALL_REMOTE_AUDIO, &CDialog2::OnClickedBtnMuteAllRemoteAudio)
+	ON_BN_CLICKED(IDC_BTN_AUDIOEFFECT1, &CDialog2::OnBnClickedAudioEffect1)
+	ON_MESSAGE(WM_ON_EFFECTFINISHED, &CDialog2::onAudioEffectFinished)
+	ON_BN_CLICKED(IDC_BTN_AUDIOEFFECT2, &CDialog2::OnBnClickedAudioEffect2)
+	ON_BN_CLICKED(IDC_BTN_AUDIOEFFECT3, &CDialog2::OnBnClickedAudioEffect3)
+	ON_BN_CLICKED(IDC_BTN_AUDIOEFFECT4, &CDialog2::OnBnClickedAudioEffect4)
+	ON_BN_CLICKED(IDC_BTN_AUDIOEFFECT5, &CDialog2::OnBnClickedAudioEffect5)
 END_MESSAGE_MAP()
 
 
@@ -317,16 +465,52 @@ BOOL CDialog2::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	g_3TEngineEventHandler.SetMsgReceiver(this->GetSafeHwnd());
 	//g_LocalUser.m_cbMsgHandler = this->GetSafeHwnd();
-	if (m_bJoinChannel && m_Status == LiveStatus::STATUS_INIT)
+	if (m_bJoinChannel)
 		this->joinChannel();
 
 	m_sliderMicVolume.SetRange(0, 255, true);
 	m_sliderMicVolume.SetTicFreq(1);
 	m_sliderMicVolume.SetPos(160);
-	m_sliderSpeakerVolume.SetRange(0, 255, true);
+	m_sliderSpeakerVolume.SetRange(0, 100, true);
 	m_sliderSpeakerVolume.SetTicFreq(1);
-	m_sliderSpeakerVolume.SetPos(160);
+	m_sliderSpeakerVolume.SetPos(70);
 
+	m_sliderUserVolume.SetRange(0, 100, true);
+	m_sliderUserVolume.SetTicFreq(1);
+	m_sliderUserVolume.SetPos(70);
+
+	m_sliderMixVolume.SetRange(0, 100, true);
+	m_sliderMixVolume.SetTicFreq(1);
+	m_sliderMixVolume.SetPos(70);
+
+	m_sliderEarbackVolume.SetRange(0, 100, true);
+	m_sliderEarbackVolume.SetTicFreq(1);
+	m_sliderEarbackVolume.SetPos(70);
+
+	m_sliderLocalVolume.SetRange(0, 100, true);
+	m_sliderLocalVolume.SetTicFreq(1);
+	m_sliderLocalVolume.SetPos(70);
+
+	m_sliderPlayoutVolume.SetRange(0, 100, true);
+	m_sliderPlayoutVolume.SetTicFreq(1);
+	m_sliderPlayoutVolume.SetPos(70);
+
+	m_sliderPublishVolume.SetRange(0, 100, true);
+	m_sliderPublishVolume.SetTicFreq(1);
+	m_sliderPublishVolume.SetPos(70);
+
+	m_sliderSeek.SetRange(0, 100, true);
+	m_sliderSeek.SetTicFreq(1);
+	m_sliderSeek.SetPos(70);
+
+	m_sliderMp3Vol.SetRange(0, 100, true);
+	m_sliderMp3Vol.SetTicFreq(1);
+	m_sliderMp3Vol.SetPos(70);
+
+	m_sliderMp3PushVol.SetRange(0, 100, true);
+	m_sliderMp3PushVol.SetTicFreq(1);
+	m_sliderMp3PushVol.SetPos(70);
+	
 	//m_vclayout.
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -342,7 +526,7 @@ void CDialog2::OnIdclose()
 
 void CDialog2::ReleaseChannel()
 {
-	//if (m_Status == LiveStatus::STATUS_JOINED)
+	
 	{
 		int index = 1;
 		if (this->isLiveMaster())
@@ -351,10 +535,19 @@ void CDialog2::ReleaseChannel()
 		g_TTTEngine->releaseLocalVideo(m_LivingMemberArray[index].mDeviceID.c_str());
 		g_TTTEngine->releaseLocalVideo(m_screenMedia.c_str());
 		m_screenMedia = "";
+		if (mPlayer && ("" != m_mp4Media)) {
+			mPlayer->stop();
+			mPlayer->close();
+			g_TTTEngine->releaseRtcPlayer(mPlayer);
+			mPlayer = NULL;
+		}
 		m_sharedata = false;
 		g_TTTEngine->releaseLocalVideo(m_secondMedia.c_str());
 		m_secondMedia = "";
-
+		
+		//g_TTTEngine->stopAudioRecording();
+		g_TTTEngine->stopPushScreenCapture();
+		m_pushscreen = false;
 		
 		//g_TTTEngine->releaseAllRemoteVideo();
 		if (g_3TEngineEventHandler.getMixerMID() != "")
@@ -362,11 +555,28 @@ void CDialog2::ReleaseChannel()
 		g_3TEngineEventHandler.resetMixerMID();
 		ReleaseAllVideo();
 		if (m_mixing) {
+			TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+			GetModuleFileName(NULL, szFilePath, MAX_PATH);
+			(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+			CString str_url = szFilePath;  // 例如str_url==e:\program\Debug\
+			str_url.Append("\\01.mp3");
 			g_TTTEngine->stopAudioMixing();
 			m_mixing = false;
 		}
+		g_TTTEngine->clearVideoWatermarks();
+		g_TTTEngine->stopAudioEffect(m_AudioEffectid1);
+		g_TTTEngine->stopAudioEffect(m_AudioEffectid2);
+		g_TTTEngine->stopAudioEffect(m_AudioEffectid3);
+		g_TTTEngine->stopAudioEffect(m_AudioEffectid4);
+		g_TTTEngine->stopAudioEffect(m_AudioEffectid5);
+
+		g_TTTEngine->unloadAudioEffect(m_AudioEffectid1);
+		g_TTTEngine->unloadAudioEffect(m_AudioEffectid2);
+		g_TTTEngine->unloadAudioEffect(m_AudioEffectid3);
+		g_TTTEngine->unloadAudioEffect(m_AudioEffectid4);
+		g_TTTEngine->unloadAudioEffect(m_AudioEffectid5);
+
 		g_TTTEngine->leaveChannel();
-		m_Status = LiveStatus::STATUS_LEAVING;
 	}
 }
 
@@ -396,20 +606,26 @@ void CDialog2::ReleaseAllVideo()
 
 LRESULT CDialog2::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 {
+	RtcErrorCode err;
+	err = (RtcErrorCode)wParam;
+	if (ENTERCONFAPI_NOERROR != err) {
+		InsertMsgAndEvent("Error", "enter fail!", "OnError");
+		MessageBox("进入房间失败！", "提示", MB_OK);
+		PostMessage(WM_CLOSE);
+		return 0;
+	}
+
 	uid_ttt uid = lParam;
 	g_LocalUser.m_uid = uid;
 
 	//set push url
-	g_LocalUser.m_pushUrl = "rtmp://push.3ttech.cn/sdk/";
-	g_LocalUser.m_pushUrl = g_LocalUser.m_pushUrl + g_LocalUser.m_roomID;
-
 
 	m_TotleParticipants++;
 	m_csParticipants = std::to_string(m_TotleParticipants).c_str();
 
 	UpdateBtnStatus();
 
-	this->m_Status = LiveStatus::STATUS_JOINED;
+
 
 	m_csRoomNum = g_LocalUser.m_roomID.c_str();
 	std::string clientRole = "";
@@ -428,110 +644,23 @@ LRESULT CDialog2::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 
 	InsertMsgAndEvent("event", "0", "JoinChannelSuccess");
 	UpdateData(false);
-	LocalVideoConfig cfg;
-	cfg.userID = g_LocalUser.m_uid;
-	cfg.type = VIDEO_CAPTURE_CAMERA;
-	cfg.renderScaleType = VIDEO_SCALE_FIT;
-	cfg.encScaleType = VIDEO_SCALE_FIT;
-	//cfg.devIndex = 454646445;
 
-	switch (g_LocalUser.m_videoProfile)
-	{
-	case 0:
-		cfg.width = 160;
-		cfg.height = 112;
-		cfg.framerate = 15;
-		//config.videoBitRate = 65;
-		break;
-	case 1:
-		cfg.width = 320;
-		cfg.height = 176;
-		cfg.framerate = 15;
-		break;
-	case 2:
-		cfg.width = 320;
-		cfg.height = 240;
-		cfg.framerate = 15;
-		break;
-	case 3:
-		cfg.width = 640;
-		cfg.height = 352;
-		cfg.framerate = 15;
-		break;
-	case 4:
-		cfg.width = 640;
-		cfg.height = 480;
-		cfg.framerate = 15;
-		break;
-	case 5:
-		cfg.width = 1280;
-		cfg.height = 720;
-		cfg.framerate = 15;
-		break;
-	case 6:
-		cfg.width = 1920;
-		cfg.height = 1080;
-		cfg.framerate = 15;
-		break;
-	default:
-		cfg.width = 640;
-		cfg.height = 480;
-		cfg.framerate = 15;
-		break;
-	}
 	CStatic   *pStatic = NULL;
 	int index = 0;
 	switch (g_LocalUser.m_clientRole)
 	{
 	case 1:
 		pStatic = (CStatic*)GetDlgItem(IDC_STATIC_MAINVIDEO);
-		cfg.viewHwnd = pStatic->GetSafeHwnd();
 		index = 0;
 		break;
 	case 2:
 	case 3:
 		pStatic = (CStatic*)GetDlgItem(IDC_STATIC_VIDEO1);
-		cfg.viewHwnd = pStatic->GetSafeHwnd();
 		index = 1;
 		break;
 	}
 
-	//UserDeviceConfig udc0(uid, "", true);
-	//udc0.userRole = g_LocalUser.m_clientRole;
-	//m_mapParticipants.insert(std::make_pair(uid, udc0));
 
-	//int count = IVideoDevice::getCount();
-	//if (count > 0)
-	//	cfg.devIndex = 0;
-	//	//IVideoDevice::getInfo(0, &cfg.devInfo);
-
-	//std::string mediaID = g_TTTEngine->createLocalVideo(cfg);
-	//
-	//addMixerVideo(uid, mediaID.c_str(), isLiveMaster());
-
-	//g_TTTEngine->startPreview(mediaID.c_str());
-	//UserDeviceConfig udc(uid, mediaID, true);
-	//udc.hwndindex = index;
-	//m_mapStreams.insert( std::make_pair(mediaID, udc) );
-
-	//m_hWndsforClient[index] = 1;
-	////m_LivingMemberArray[index].mHwndindex = index; 
-	//m_LivingMemberArray[index].mUserID = uid;
-	//m_LivingMemberArray[index].mDeviceID = mediaID;
-	////m_btnMuteRemoteAudio.set
-	
-	// merge with zkb   for  capture camera before enter room
-	//UserDeviceConfig udc0(uid, "", true);
-	//udc0.userRole = g_LocalUser.m_clientRole;
-	//m_mapParticipants.insert(std::make_pair(uid, udc0));
-
-	//int count = IVideoDevice::getCount();
-	//if (count > 0)
-	//	cfg.devIndex = 0;
-	//	//IVideoDevice::getInfo(0, &cfg.devInfo);
-
-	//std::string mediaID = g_TTTEngine->createLocalVideo(cfg);
-	//g_TTTEngine->stopPreview(m_LivingMemberArray[index].mDeviceID.c_str());
 	m_LivingMemberArray[index].mUserID = g_LocalUser.m_uid;
 	addMixerVideo(uid, m_LivingMemberArray[index].mDeviceID.c_str(), isLiveMaster());
 
@@ -548,18 +677,32 @@ LRESULT CDialog2::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	//m_LivingMemberArray[index].mUserID = uid;
 	//m_LivingMemberArray[index].mDeviceID = m_LivingMembferArray[index].mDeviceID.c_str();
 	//m_btnMuteRemoteAudio.set
-	g_TTTEngine->setSpeakerphoneVolume(160);
+
+	//2019-6-24
+	//g_TTTEngine->setSpeakerphoneVolume(160);
 
 	if (m_bSDKTEST)
 		this->SetTimer(125, 15000, NULL);
 
+	//std::string str_url;
+	TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+	GetModuleFileName(NULL, szFilePath, MAX_PATH);
+	(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+	m_apppath = szFilePath;
+
+	m_AudioEffectid1 = 0;
+	m_AudioEffectid2 = 0;
+	m_AudioEffectid3 = 0;
+	m_AudioEffectid4 = 0;
+	m_AudioEffectid5 = 0;
 	return 0;
 }
 
 LRESULT CDialog2::OnLeaveChannel(WPARAM wParam, LPARAM lParam)
 {
+
 	ReleaseChannel();
-	m_Status = LiveStatus::STATUS_INIT;
+
 
 	//////if (g_TTTEngine != NULL)
 	//////	g_TTTEngine->stopPreview();
@@ -595,8 +738,6 @@ LRESULT CDialog2::OnLeaveChannel(WPARAM wParam, LPARAM lParam)
 
 LRESULT CDialog2::OnError(WPARAM wParam, LPARAM lParam)
 {
-	//////if (m_Status == LiveStatus::STATUS_JOINING)
-	//////	g_TTTEngine->stopPreview();
 
 	int code = lParam;
 	std::string scode = std::to_string(code);
@@ -683,6 +824,7 @@ LRESULT CDialog2::OnRemoteVideoEnable(WPARAM wParam, LPARAM lParam)
 						cfg->hwnd = (void *)-123;
 						break;
 					}
+					//cfg->hwnd = (void *)-123;
 					//open remote video stream 
 					if (g_TTTEngine != NULL && index < 50)
 						g_TTTEngine->createRemoteVideo(*cfg);
@@ -767,10 +909,10 @@ LRESULT CDialog2::OnRemoteVideoState(WPARAM wParam, LPARAM lParam)
 	if ( m_mapStreams.find(mediaID) != m_mapStreams.end())
 		index = m_mapStreams.at(mediaID).hwndindex;
 
-	if (index > -1 && index < 5)
+	if (index > -1 && index < 6)
 	{
 		char  buf[256] = { 0 };
-		sprintf(buf, "视频：%d kbps", lpData->bitrateKbps);
+		sprintf(buf, "视频：%d kbps 用户ID:%lld", lpData->bitrateKbps, lpData->userID);
 		switch (index) {
 		case 0:
 		case 1:
@@ -790,6 +932,62 @@ LRESULT CDialog2::OnRemoteVideoState(WPARAM wParam, LPARAM lParam)
 			break;
 		}
 	}
+	UpdateData(false);
+	delete lpData;
+	lpData = NULL;
+
+
+	//InsertMsgAndEvent("Event", "Rtc State", "OnRtcState");
+	return 0;
+}
+
+LRESULT CDialog2::onRemoteAudioStats(WPARAM wParam, LPARAM lParam)
+{
+	RemoteAudioStats  *lpData = (RemoteAudioStats *)wParam;
+	//std::string mediaID = lpData->userID ->mediaID;
+	long long userid = lpData->userID;
+	PARTICIPANTSTREAMS::iterator iter = m_mapStreams.begin();
+	UserDeviceConfig udc(0, "", true);
+	std::string mediaID="";
+	for (; iter != m_mapStreams.end(); iter++) {
+		udc = iter->second;
+		if (userid == udc.mUserID) {
+			mediaID = iter->first;
+		}
+		if ("" == mediaID) {
+			continue;
+		}
+		//uid_ttt uid = lpData->userID;
+		int index = -1;
+		if (m_mapStreams.find(mediaID) != m_mapStreams.end())
+			index = m_mapStreams.at(mediaID).hwndindex;
+
+		if (index > -1 && index < 6)
+		{
+			char  buf[256] = { 0 };
+			sprintf(buf, "音频码率:%d", lpData->bitrate_kbps);
+			switch (index) {
+			case 0:
+			case 1:
+				m_Audio0Info = buf;
+				break;
+			case 2:
+				m_Audio2Info = buf;
+				break;
+			case 3:
+				m_Audio3Info = buf;
+				break;
+			case 4:
+				m_Audio4Info = buf;
+				break;
+			case 5:
+				m_Audio5Info = buf;
+				break;
+			}
+		}
+	}
+
+
 	UpdateData(false);
 	delete lpData;
 	lpData = NULL;
@@ -933,17 +1131,26 @@ void CDialog2::UpdateBtnStatus()
 	m_btnKickOut.EnableWindow(isLiveMaster());
 	//m_btnPlayMp4.EnableWindow(isLiveMaster());
 	m_btnUpgradeClientrole.EnableWindow(isGuest());
-
+	m_btnAnchorLink.EnableWindow(isLiveMaster());
 	m_btnMuteUnmuteCamera.EnableWindow(isLiveParticipant() || isLiveMaster());
 	this->m_btnMuteUnmuteMic.EnableWindow(isLiveParticipant() || isLiveMaster());
 	this->m_btnMuteUnmuteSpeaker.EnableWindow(false);
 	return;
 }
 
+void CDialog2::OnClickedBtnMuteAllRemoteAudio()
+{
+	static bool b_all_mute_remoteaudio=false;
+	if (g_TTTEngine != NULL)
+	{
+		g_TTTEngine->muteAllRemoteAudioStreams(!b_all_mute_remoteaudio);
+		b_all_mute_remoteaudio = !b_all_mute_remoteaudio;
+	}
+}
 void CDialog2::OnClickedBtnMuteRemoteAudio()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL )
 	{
 		//this->m_btnMuteRemoteAudio.SetCheck(false);
 		bool mute = m_ClientAudioStreamMute[m_CurSelVideoIndex];
@@ -967,7 +1174,7 @@ int CDialog2::getLocalVideoHwndindex()
 void CDialog2::OnClickedBtnMuteUnmuteCamera()
 {
 	//static bool  bopened = true;
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL)
 	{
 		if (m_openedCamera)  //tobe release local video
 		{
@@ -983,49 +1190,81 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 			cfg.userID = g_LocalUser.m_uid;
 			cfg.type = VIDEO_CAPTURE_CAMERA;
 
+			std::string value;
+			std::string s_utf8 = ws_techapi::s2utf8("不替换");
+
+			(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"是否替换为屏幕", s_utf8, value));
+			if (s_utf8 == value) {
+				cfg.type = VIDEO_CAPTURE_CAMERA;
+
+				std::string value;
+				(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"输入摄像头的索引", "0", value));
+				int index = stringToll(value);
+
+				int count = IVideoDevice::getCount();
+				if (count > index) {
+					cfg.devIndex = index;
+				}
+				else {
+					cfg.devIndex = 0;
+				}
+			}
+			else
+			{
+				cfg.type = VIDEO_CAPTURE_SCREEN;
+			}
+
+
 			switch (g_LocalUser.m_videoProfile)
 			{
 			case 0:
 				cfg.width = 160;
 				cfg.height = 112;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				//config.videoBitRate = 65;
 				break;
 			case 1:
 				cfg.width = 320;
 				cfg.height = 176;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			case 2:
 				cfg.width = 320;
 				cfg.height = 240;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			case 3:
 				cfg.width = 640;
 				cfg.height = 352;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			case 4:
 				cfg.width = 640;
 				cfg.height = 480;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			case 5:
 				cfg.width = 1280;
 				cfg.height = 720;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			case 6:
 				cfg.width = 1920;
 				cfg.height = 1080;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			default:
 				cfg.width = 640;
 				cfg.height = 480;
-				cfg.framerate = 15;
+				cfg.framerate = g_LocalUser.m_framerate;
 				break;
+			}
+			if (VIDEO_CAPTURE_SCREEN == cfg.type){
+			cfg.screenRect.x = 0;
+			cfg.screenRect.y = 0;
+			cfg.screenRect.w = GetSystemMetrics(SM_CXSCREEN);
+			cfg.screenRect.h = GetSystemMetrics(SM_CYSCREEN);
+			cfg.framerate = 8;
 			}
 			CStatic   *pStatic = NULL;
 			int index = 0;
@@ -1048,11 +1287,10 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 			udc0.userRole = g_LocalUser.m_clientRole;
 			m_mapParticipants.insert(std::make_pair(g_LocalUser.m_uid, udc0));
 
-			int count = IVideoDevice::getCount();
-			if (count > 0)
-				cfg.devIndex = 0;
+
 			//IVideoDevice::getInfo(0, &cfg.devInfo);
 			std::string mediaID = "";
+			cfg.bitrateKbps = 0;
 			char* id = g_TTTEngine->createLocalVideo(cfg);
 			if (id) {
 				mediaID = id;
@@ -1087,7 +1325,7 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 
 void CDialog2::OnClickedBtnMuteUnmuteMic()
 {
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL)
 	{
 		bool mute = !g_LocalUser.m_bLocalAudioStream;
 		g_TTTEngine->muteLocalAudioStream(mute);
@@ -1122,7 +1360,7 @@ void CDialog2::OnClickedBtnMuteUnmuteNetstat()
 
 void CDialog2::OnClickedBtnMuteUnmuteSpeaker()
 {
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL )
 	{
 		//g_TTTEngine->muteLocalAudioStream();
 	}
@@ -1137,7 +1375,7 @@ void CDialog2::OnClickedBtnUpgradeClientrole()
 
 void CDialog2::OnClickedBtnKickOut()
 {
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL )
 	{
 		g_TTTEngine->kickChannelUser(m_LivingMemberArray[m_CurSelVideoIndex].mUserID);
 		char buf[256] = { 0 };
@@ -1149,25 +1387,126 @@ void CDialog2::OnClickedBtnKickOut()
 
 void CDialog2::OnClickedBtnMp4Play()
 {
-	CString strFile = _T("");
-	
-	CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp4)|*.jpg|All Files (*.*)|*.*||"), NULL);
-		
-	if (dlgFile.DoModal())
+	//CString strFile = _T("");
+
+	CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp4)|*.mp4|All Files (*.*)|*.*||"), NULL);
+
+	//if (dlgFile.DoModal())
+	if (("" == m_mp4Media) && dlgFile.DoModal())
 	{
-		strFile = dlgFile.GetPathName();
-		if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+		m_mp4Media = dlgFile.GetPathName();
+		//strFile = dlgFile.GetPathName();
+		if (g_TTTEngine != NULL)
 		{
-			//////g_TTTEngine->startPlayMp4(strFile.GetBuffer(), m_ShowMp4.GetSafeHwnd());
+			mPlayer = g_TTTEngine->createRtcPlayer(g_LocalUser.m_uid);
+			RtcPlayerConfig mPConfig;
+			mPConfig.enable_audio = true;
+			mPConfig.enable_video = true;
+			//mPConfig.cycle = 2;
+
+			mPConfig.enable_playout = true;
+			mPConfig.enable_publish = true;
+			mPConfig.playout_volume = 100;
+			mPConfig.publish_volume = 100;
+
+			mPConfig.viewHwnd = (void *)-123;
+			mPConfig.width = 1280;
+			mPConfig.height = 720;
+			mPConfig.framerate = g_LocalUser.m_framerate;
+			mPConfig.encScaleType = VIDEO_SCALE_FIT;
+			mPConfig.renderScaleType = VIDEO_SCALE_FIT;
+			//m_mp4Media = strFile.GetBuffer(strFile.GetLength());
+			std::string s_utf8 = ws_techapi::s2utf8(m_mp4Media);
+
+			mPlayer->open(s_utf8.c_str(), &mPConfig);
+			mPlayer->start(1000);
+
+			m_sliderSeek.SetRange(0, mPlayer->duration(), true);
+			m_sliderSeek.SetTicFreq(1);
+			m_sliderSeek.SetPos(mPlayer->position());
+
 		}
+	}
+	else
+	{
+		m_mp4Media = "";
+		mPlayer->stop();
+		mPlayer->close();
+		g_TTTEngine->releaseRtcPlayer(mPlayer);
+		mPlayer = NULL;
+
 	}
 }
 
+void CDialog2::OnClickedBtnPushScreen()
+{
+	if (m_pushscreen == false)
+	{
+
+		std::string value;
+		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"屏幕的宽度", m_screen_width, value));
+		m_screen_width = value;
+		int width = stringToll(value);
+		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"屏幕的高度", m_screen_height, value));
+		m_screen_height = value;
+		int height = stringToll(value);
+
+		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"推流地址", "rtmp:\/\/push.3ttech.cn\/sdk\/123454321", value)); //rtmp:\/\/push.3ttech.cn\/sdk\/123454321
+	    std::string s_push_url = value;
+		AV_PUSH_TYPE recordtype;
+
+		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"录制文件的路径", "d:\\recccc.mp4", value));
+		
+		std::string s_mp4_path = (value);;
+
+		recordtype = AV_PUSH_MP4_CDN;
+		if ("" == s_push_url) {
+			if ("" == s_mp4_path) {
+				return;
+			}
+			else
+			{
+				recordtype = AV_RECORD_MP4;  
+			}
+		}
+		else
+		{
+			if ("" == s_mp4_path) {
+				recordtype = AV_PUSH_CDN;
+			}
+			else
+			{
+				recordtype = AV_PUSH_MP4_CDN;
+			}
+		}
+		int res = 0;
+		res  = g_TTTEngine->startPushScreenCaptureRect(0, 0, width, height, recordtype, s_mp4_path.c_str(), s_push_url.c_str());
+		if (int(PARAMERR) == res) {
+			MessageBox("参数错误！", "提示", MB_OK);
+		}
+		m_pushscreen = true;
+		//g_TTTEngine->startAudioRecording("aaa.aac", AUDIO_RECORDING_QUALITY::AUDIO_RECORDING_QUALITY_LOW);
+	}
+	else
+	{
+		m_pushscreen = false;
+		//g_TTTEngine->stopAudioRecording();
+		g_TTTEngine->stopPushScreenCapture();
+	}
+	if (m_pushscreen)
+		m_btnPushScreen.SetWindowTextA("正在推流点击关闭");
+	else
+		m_btnPushScreen.SetWindowTextA("推流已停止点击开始");
+}
 
 void CDialog2::OnBnClickedButton3()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//////g_TTTEngine->setVideoProfile(g_LocalUser.m_videoProfile - 1, false);
+	int i = g_TTTEngine->getConnectionState();
+	char buf[256] = { 0 };
+	sprintf(buf, " %d", i);
+	InsertMsgAndEvent("connect Stat:", buf, buf);
 }
 
 
@@ -1182,20 +1521,25 @@ void CDialog2::OnClickedBtnAnchorlink()
 {
 	static bool linkotherRoom = false;
 	static LONGLONG llinkroomid = 0;
-	if (g_TTTEngine != NULL && linkotherRoom == false && m_Status == LiveStatus::STATUS_JOINED && isLiveMaster())
+	static LONGLONG lluseid = 0;
+	if (g_TTTEngine != NULL && linkotherRoom == false && isLiveMaster())
 	{
-		CDialogAnchorLink dlg;
+		static CDialogAnchorLink dlg;
 		INT_PTR nResponse = dlg.DoModal();
 		if (nResponse == IDOK)
 		{
 			g_TTTEngine->subscribeOtherChannel(dlg.m_llRoomID);
 			llinkroomid = dlg.m_llRoomID;
+			lluseid = dlg.m_llUserID;
 			linkotherRoom = true;
 			//g_TTTEngine->linkOtherAnchor(dlg.m_llRoomID, dlg.m_llUserID);
 		}
 	}
 	else if (linkotherRoom == true)
 	{
+		std::string uid = ws_techapi::llToString(lluseid);
+
+		//g_TTTEngine->unlinkOtherAnchor(llinkroomid, lluseid, uid.c_str());
 		g_TTTEngine->unsubscribeOtherChannel(llinkroomid);
 		linkotherRoom = false;
 		llinkroomid = 0;
@@ -1206,7 +1550,7 @@ void CDialog2::OnClickedBtnAnchorlink()
 void CDialog2::OnBnClickedBtnMuteRemoteVideo()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL )
 	{
 		//this->m_btnMuteRemoteAudio.SetCheck(false);
 		bool mute = m_ClientVideoStreamMute[m_CurSelVideoIndex];
@@ -1221,26 +1565,52 @@ void CDialog2::OnBnClickedBtnMuteRemoteVideo()
 
 void CDialog2::OnBnClickedBtnSetvolume()
 {
-	if (g_TTTEngine != NULL && m_Status == LiveStatus::STATUS_JOINED)
+	if (g_TTTEngine != NULL ) //&& m_Status == LiveStatus::STATUS_JOINED
 	{
 		if (m_mixing) {
+
 			g_TTTEngine->stopAudioMixing();
 			m_mixing = false;
 		}
 		else
 		{
-			TCHAR szFilePath[MAX_PATH + 1] = { 0 };
-			GetModuleFileName(NULL, szFilePath, MAX_PATH);
-			(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
-			CString str_url = szFilePath;  // 例如str_url==e:\program\Debug\
+			static bool bOpenDialog = false;
+			std::string str_url = "";
+			if (bOpenDialog) {
+				CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp3)|*.mp3|All Files (*.*)|*.*||"), NULL);
+				dlgFile.DoModal();
+				str_url = dlgFile.GetPathName();
+				if ("" == str_url) {
+					return;
+				}
+				bOpenDialog = false;
+			}
+			else
+			{
+				TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+				GetModuleFileName(NULL, szFilePath, MAX_PATH);
+				(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+				str_url = szFilePath;  // 例如str_url==e:\program\Debug\
 
-			str_url.Append("\\01.mp3");
-            g_TTTEngine->startAudioMixing(str_url.GetBuffer(str_url.GetLength()), false, false, 20);
+				str_url.append("\\01.mp3");
+				bOpenDialog = true;
+			}
+			AudioMixingConfig a_config;
+			std::string s_utf8 = ws_techapi::s2utf8(str_url);
+			strcpy(a_config.filePath, s_utf8.c_str());
+			a_config.cycle = 1000;
+			a_config.enable_playout = true;
+			a_config.enable_publish = true;
+			
+            g_TTTEngine->startAudioMixing(&a_config);
+			m_sliderMp3Seek.SetRange(0, g_TTTEngine->getAudioMixingDuration(), true);
+			m_sliderMp3Seek.SetTicFreq(1);
+			m_sliderMp3Seek.SetPos(g_TTTEngine->getAudioMixingCurrentPosition());
 			m_mixing = true;
 		}
 	}
 }
-
+	
 
 void CDialog2::OnNMThemeChangedSliderMicvolume(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -1255,14 +1625,53 @@ void CDialog2::OnNMThemeChangedSliderMicvolume(NMHDR *pNMHDR, LRESULT *pResult)
 void CDialog2::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	UpdateData(true);
+	SendMessage(WM_MYUPDATEDATA, true);
+	//UpdateData(true);
 	switch (pScrollBar->GetDlgCtrlID())
 	{
 	case IDC_SLIDER_MICVOLUME:
 		break;
 	case IDC_SLIDER_MICVOLUME2:
-		g_TTTEngine->setSpeakerphoneVolume(m_sliderSpeakerVolume.GetPos());
+		//2019-6-24
+		g_TTTEngine->adjustLocalAudioVolume(m_sliderSpeakerVolume.GetPos());
 		break;
+	case IDC_SLIDER_USER_VOLUME:
+		g_TTTEngine->adjustRemoteAudioVolume(m_LivingMemberArray[m_CurSelVideoIndex].mUserID, m_sliderUserVolume.GetPos());
+		break;
+	case IDC_SLIDER_MIX_VOLUME:
+		g_TTTEngine->adjustRemoteAudioMixedVolume(m_sliderMixVolume.GetPos());
+		break;
+	case IDC_SLIDER_EARBACK_VOLUME:
+		g_TTTEngine->adjustEarphoneMonitorVolume(m_sliderEarbackVolume.GetPos());
+		break;
+	case IDC_SLIDER_LOACAL_VOLUME:
+		g_TTTEngine->adjustLocalAudioVolume(m_sliderLocalVolume.GetPos());
+		break;
+	case IDC_SLIDER_PLAYOUTVOLUME:
+		if (mPlayer) {
+			mPlayer->adjustPlayoutVolume(m_sliderPlayoutVolume.GetPos());
+		}
+		break;
+	case IDC_SLIDER_PUBLISHVOLUME:
+		if (mPlayer) {
+			mPlayer->adjustPublishVolume(m_sliderPublishVolume.GetPos());
+		}
+		break;
+	case IDC_SLIDER_SEEK:
+		if (mPlayer) {
+			mPlayer->seek(m_sliderSeek.GetPos());
+		}
+		break;
+	case IDC_SLIDER_MP3_VOL:
+		g_TTTEngine->adjustAudioMixingPlayoutVolume(m_sliderMp3Vol.GetPos());
+		break;
+	case IDC_SLIDER_MP3_PUSHVOL:
+		g_TTTEngine->adjustAudioMixingPublishVolume(m_sliderMp3PushVol.GetPos());
+		break;
+	case IDC_SLIDER_MP3_SEEK:
+		g_TTTEngine->setAudioMixingPosition(m_sliderMp3Seek.GetPos());
+		break;
+
 	}
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -1284,8 +1693,8 @@ void CDialog2::OnTimer(UINT_PTR nIDEvent)
 void CDialog2::initLayout()
 {
 	memset(&m_vclayout, 0, sizeof(VideoCompositingLayout));
-	m_vclayout.canvasWidth = 720;
-	m_vclayout.canvasHeight = 640;
+	m_vclayout.canvasWidth = 1280;
+	m_vclayout.canvasHeight = 720;
 	strcpy(m_vclayout.backgroundColor, "#FF0000");
 	m_vclayout.regionCount = 0;
 
@@ -1328,6 +1737,10 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 {
 	//static bool shared = false;
 	//static std::string m_screenMedia = "";
+
+#if 0
+
+#else
 	if (m_sharedata == false)
 	{
 		LocalVideoConfig cfg;
@@ -1339,8 +1752,8 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 		cfg.screenRect.y = 0;
 		//RECT rect;
 		//SystemParametersInfo(SPI_GETWORKAREA, 0, (PVOID)&rect, 0);
-		cfg.screenRect.w = 1280;// GetSystemMetrics(SM_CXSCREEN);
-		cfg.screenRect.h = 720;// GetSystemMetrics(SM_CYSCREEN);
+		cfg.screenRect.w = GetSystemMetrics(SM_CXSCREEN);
+		cfg.screenRect.h = GetSystemMetrics(SM_CYSCREEN);
 		cfg.framerate = 5;
 		CStatic *pStatic = NULL;
 		pStatic = (CStatic*)GetDlgItem(IDC_STATIC_DATASHARE);
@@ -1357,7 +1770,7 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 		g_TTTEngine->startPreview(m_screenMedia.c_str());
 		m_sharedata = true;
 	}
-	else 
+	else
 	{
 		g_TTTEngine->stopPreview(m_screenMedia.c_str());
 		g_TTTEngine->releaseLocalVideo(m_screenMedia.c_str());
@@ -1365,6 +1778,7 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 		m_sharedata = false;
 	}
 	m_screenMedia = m_screenMedia;
+#endif
 }
 
 void CDialog2::addMixerVideo(int64_t userID, const char *mediaID, bool isMaster)
@@ -1437,6 +1851,117 @@ LRESULT CDialog2::OnMixerVideoCreate(WPARAM wParam, LPARAM lParam)
 
 
 
+void CDialog2::OnBnClickedSetWaterMark()
+{
+	static int i = 0;
+    RtcImage watermark;
+
+	if (("" == m_png_url) )
+	{
+
+		if (0 == i) {
+			//std::string url = "D:\\gsws\\myaudiodll_me\\depot_tools\\win_tools-2_7_6_bin\\git\\openmeeting2\\Resources\\video\\BigVideoLogo.png";
+			//"logo.png";
+			TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+			GetModuleFileName(NULL, szFilePath, MAX_PATH);
+			(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+			CString str_url = szFilePath;  // 例如str_url==e:\program\Debug\
+
+		    str_url.Append("\\logo-white.png");
+
+			m_png_url = str_url.GetBuffer();// "logo-white.png";
+			std::string s_utf8 = ws_techapi::s2utf8(m_png_url);
+
+			strcpy(watermark.url, s_utf8.c_str());
+			watermark.x = 100;
+			watermark.y = 100;
+			watermark.width = 0;
+			watermark.height = 0;
+		}
+		if (1 == i) {
+			CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.png)|*.png|All Files (*.*)|*.*||"), NULL);
+			dlgFile.DoModal();
+			m_png_url = dlgFile.GetPathName();
+			if ("" == m_png_url) {
+				return;
+			}
+			std::string s_utf8 = ws_techapi::s2utf8(m_png_url);
+
+			std::string value;
+			(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"x的值", "89", value));
+			int x = stringToll(value);
+			(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"y的值", "89", value));
+
+			int y = stringToll(value);
+			(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"width的值", "200", value));
+			int width = stringToll(value);
+			
+			(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"height的值", "300", value));
+			int height = stringToll(value);
+
+			strcpy(watermark.url, s_utf8.c_str());
+			watermark.x = x;
+			watermark.y = y;
+			watermark.width = width;
+			watermark.height = height;
+		}
+		i++;
+		if (i == 2) {
+			i = 0;
+		}
+
+		g_TTTEngine->addVideoWatermark(watermark);
+	}
+	else {
+		g_TTTEngine->clearVideoWatermarks();
+		m_png_url = "";
+	}
+}
+
+
+void CDialog2::OnBnClickedSetEarBack()
+{
+	static bool bOpen = false;
+	if (bOpen)
+	{
+		bOpen = false;
+		g_TTTEngine->enableEarphoneMonitor(false);
+		return;
+	}
+	static int i = 0;
+	if (0 == i) {
+	}
+	if (1 == i) {
+	}
+	i++;
+	if (i == 2) {
+		i = 0;
+	}
+	g_TTTEngine->enableEarphoneMonitor(true);
+	bOpen = true;
+
+}
+
+LRESULT CDialog2::OnUpdateMyData(WPARAM wp, LPARAM lp)
+{
+	UpdateData(wp);
+	return 0;
+}
+
+
+LRESULT CDialog2::onRTMPsenderror(WPARAM wParam, LPARAM lParam)
+{
+	InsertMsgAndEvent("Error", "RTMPsenderror!", "onRTMPsenderror");
+	return 0;
+}
+
+LRESULT CDialog2::onAudioEffectFinished(WPARAM wParam, LPARAM lParam)
+{
+	int id = (int)wParam;
+	g_TTTEngine->stopAudioEffect(id);
+	return LRESULT();
+}
+
 void CDialog2::OnBnClickedBtn2Camera()
 {
 	bool bOpen = false;
@@ -1458,23 +1983,22 @@ void CDialog2::OnBnClickedBtn2Camera()
 		return;
 	}
 
-
 	LocalVideoConfig cfg;
 	cfg.userID = g_LocalUser.m_uid;
 	cfg.type = VIDEO_CAPTURE_CAMERA;
 	cfg.encScaleType = VIDEO_SCALE_FIT;
 	cfg.renderScaleType = VIDEO_SCALE_FIT;
 
-		cfg.width = 640;
-		cfg.height = 480;
-		cfg.framerate = 15;
+	cfg.width = 640;
+	cfg.height = 480;
+	cfg.framerate = 15;
 
 	CStatic   *pStatic = NULL;
 	pStatic = (CStatic*)GetDlgItem(IDC_STATIC_SEC_CAMERA);
 	cfg.viewHwnd = pStatic->GetSafeHwnd();
 		//cfg.viewHwnd = NULL;
 	cfg.devIndex = 1;
-
+	cfg.bitrateKbps = 0;
 	char* id = g_TTTEngine->createLocalVideo(cfg);
 	if (id) {
 		m_secondMedia = id;
@@ -1488,3 +2012,62 @@ void CDialog2::OnBnClickedBtn2Camera()
 	addMixerVideo(g_LocalUser.m_uid, m_secondMedia.c_str(), false);
 	bOpen = true;
 }
+
+void CDialog2::OnBnClickedAudioEffect1()
+{
+
+	//static bool bBegin = false;
+	//if (!bBegin) {
+	std::string strAudioMp3;
+	strAudioMp3 = m_apppath;
+	if (0 == m_AudioEffectid1) {
+		m_AudioEffectid1 = g_TTTEngine->loadAudioEffect(strAudioMp3.append("激烈掌声.mp3").c_str());
+	}
+		g_TTTEngine->playAudioEffect(m_AudioEffectid1, 1, true);
+}
+
+void CDialog2::OnBnClickedAudioEffect2()
+{
+	std::string strAudioMp3;
+	strAudioMp3 = m_apppath;
+	if (0 == m_AudioEffectid2) {
+		m_AudioEffectid2 = g_TTTEngine->loadAudioEffect(strAudioMp3.append("欢呼尖叫.mp3").c_str());
+	}
+	g_TTTEngine->playAudioEffect(m_AudioEffectid2, 1, true);
+
+}
+
+void CDialog2::OnBnClickedAudioEffect3()
+{
+
+
+	std::string strAudioMp3;
+	strAudioMp3 = m_apppath;
+	if (0 == m_AudioEffectid3) {
+		m_AudioEffectid3 = g_TTTEngine->loadAudioEffect(strAudioMp3.append("欢呼掌声.mp3").c_str());
+	}
+	g_TTTEngine->playAudioEffect(m_AudioEffectid3, 1, true);
+}
+
+void CDialog2::OnBnClickedAudioEffect4()
+{
+	std::string strAudioMp3;
+	strAudioMp3 = m_apppath;
+	if (0 == m_AudioEffectid4) {
+		m_AudioEffectid4 = g_TTTEngine->loadAudioEffect(strAudioMp3.append("群众笑声.mp3").c_str());
+	}
+	g_TTTEngine->playAudioEffect(m_AudioEffectid4, 1, true);
+
+}
+
+void CDialog2::OnBnClickedAudioEffect5()
+{
+
+	std::string strAudioMp3;
+	strAudioMp3 = m_apppath;
+	if (0 == m_AudioEffectid5) {
+		m_AudioEffectid5 = g_TTTEngine->loadAudioEffect(strAudioMp3.append("乌鸦飞过.mp3").c_str());
+	}
+	g_TTTEngine->playAudioEffect(m_AudioEffectid5, 1, true);
+}
+

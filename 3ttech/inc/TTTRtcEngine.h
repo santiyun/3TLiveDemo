@@ -43,43 +43,37 @@ namespace TTTRtc {
         */
         static int getInfo(const char *devicePath, VideoDeviceInfo* outInfo);
     };
-
+	
+	class TTT_API IMessagLog
+	{
+	public:
+		static void onMessageLog(bool bSendLog, const char* msg, ...);
+	};
+	
+    class TTT_API IRtcPlayerEventHandler
+    {
+    public:
+        virtual void onPlayFinished() {};
+    };
     class TTT_API IRtcPlayer
     {
     public:
-        enum PlayerFlag : int32_t {
-            kFlagPlayAudio = 0x00000001,
-            kFlagPlayVideo = 0x00000002,
-            kFlagLoopback = 0x00000004,
-
-            kFlagAll = 0x000000ff,
-        };
-        enum ReturnCodes {
-            kSuccess = 0,
-            kError = -1
-        };
-        struct AudioConfig {
-            float   valume;     //输出音频音量 0.0-2.0
-        };
-        struct VideoConfig {
-             void *viewHwnd;     //显示窗口句柄
-             int32_t width;      //输出视频宽度
-             int32_t height;     //输出视频高度
-             int32_t framerate;  //输出视频帧率
-
-             VIDEO_SCALE_TYPE encScaleType;      //编码输出裁剪方式
-             VIDEO_SCALE_TYPE renderScaleType;   //本地回显裁剪方式
-        };
-
         virtual ~IRtcPlayer() {}
-        virtual int start(const char* url, int flags, AudioConfig* aconfig, VideoConfig* vconfig) = 0;
-        virtual void stop() = 0;
-        virtual void pause() = 0;
-        virtual void resume() = 0;
-        virtual uint32_t volume() = 0;
-        virtual void setVolume(uint32_t volume) = 0;
-        virtual int duration() = 0;  //length in seconds
-        virtual void seek(uint32_t seconds) = 0;
+        virtual int setEventHandler(IRtcPlayerEventHandler *event) = 0;
+        virtual int open(const char* url, RtcPlayerConfig* config) = 0;
+        virtual int close() = 0;
+        virtual int start(int loop_count) = 0;
+        virtual int stop() = 0;
+        virtual int pause() = 0;
+        virtual int resume() = 0;
+        virtual int adjustPlayoutVolume(int volume) = 0;//本地播放的音量
+        virtual int adjustPublishVolume(int volume) = 0;//提供给远端的音量
+        virtual int duration() = 0; //length in ms
+        virtual int position() = 0; //current position in ms
+        virtual int seek(uint32_t seek_ms) = 0;
+
+        virtual int audioID() = 0;
+        virtual const char* mediaID() = 0;
     };
 
 	/**
@@ -159,12 +153,14 @@ namespace TTTRtc {
 		* @param [in] audioLevel				说话者的音量，在0-9之间
 		* @param [in] audioLevelFullRange		说话者的音量，音量范围更大0-32767.5之间
 		*/
-		virtual void onAudioVolumeIndication(int64_t nUserID, int audioLevel, int audioLevelFullRange) {
-            (void)nUserID;
-            (void)audioLevel;
-            (void)audioLevelFullRange;
+		virtual void onAudioVolumeIndication(AudioLevelInfo* info) {
+            (void)info;
         }
 
+		virtual void onAudioVadIndication(int64_t userID, int active) {
+            (void)userID;
+            (void)active;
+        }
 		/**
 		* 连接丢失回调
 		*/
@@ -196,7 +192,14 @@ namespace TTTRtc {
 		virtual void onRemoteVideoStats(const RemoteVideoStats& stats) {
 			(void)stats;
 		}
-        //TODO:音频状态
+
+
+        virtual void onLocalAudioStats(const LocalAudioStats& stats) {
+			(void)stats;
+		}
+		virtual void onRemoteAudioStats(const RemoteAudioStats& stats) {
+			(void)stats;
+		}
 
 		/**
 		* 其他用户加入当前频道回调
@@ -226,7 +229,7 @@ namespace TTTRtc {
 		* @param [in] mediaID	媒体ID
 		* @param [in] enabled	用户已启用/关闭了视频功能
 		*/
-		virtual void onUserEnableVideo(int64_t userID, const char *mediaID, bool enabled) {
+		virtual void onUserEnableVideo(int64_t userID, const char *mediaID, int mediaType, bool enabled) {
             (void)userID;
             (void)mediaID;
             (void)enabled;
@@ -235,6 +238,10 @@ namespace TTTRtc {
             (void)mediaID;
         }
 
+        virtual void onAudioMixingFinished() {}
+        virtual void onAudioEffectFinished(int id) {
+            (void)id;
+        }
 		/**
 		* 收到其他房间用户连麦请求
 		* @param [in] roomID  请求连麦的房间号
@@ -253,7 +260,10 @@ namespace TTTRtc {
 		* @param [in] nError 0表示成功，其他表示失败
 		*/
 		virtual void onOtherAnchorLinked(long long roomID, long long operUserID, const char* operDevID, int nError) {
-
+			(void)roomID;
+			(void)operUserID;
+			(void)operDevID;
+			(void)nError;
 		}
 
 		/**
@@ -262,7 +272,9 @@ namespace TTTRtc {
 		* @param [in] operUserID 请求断麦的用户ID
 		*/
 		virtual void onOtherAnchorUnlink(long long roomID, long long operUserID, int nError) {
-
+			(void)roomID;
+			(void)operUserID;
+			(void)nError;
 		}
 
 		/**
@@ -271,13 +283,45 @@ namespace TTTRtc {
 		* @param [in] operUserID 请求断麦的用户ID
 		*/
 		virtual void onOtherAnchorUnLinked(long long roomID, long long operUserID) {
+			(void)roomID;
+			(void)operUserID;
+		}
+		/**
+		* 根据服务器返回的Sei，获得副播的显示信息。
+		* @param [in] SEI 主播设置的SEI值，json格式的字符串
+		*/
+		virtual void onSetSEI( const char* SEI ) {
 
 		}
+		/**
+		* 本地推流端口收到的回调
+		* @param [in] err  回调的提示信息
+		* @param [in] operUserID 请求断麦的用户ID
+		*/
+		virtual void onRTMPsenderror(const char * err) {
+
+		}
+
+		/**
+		* 服务器推流状态的回调
+		* @param [in] roomID   房间号
+		* @param [in] szRTMPURL 有状态变化的旁路推流地址
+		* @param [in] status	状态值
+		*/
+		virtual void onRTMPStatusChange(long long roomID, const char* szRTMPURL, bool status) {
+			(void)roomID;
+			(void)szRTMPURL;
+			(void)status;
+		}
+		virtual void onRequestChannelKey() {
+		}
+		
 	};
     
     class IVideoFrameObserver
     {
     public:
+        //TODO: to TVideoFrame
         enum VIDEO_FRAME_TYPE {
             FRAME_TYPE_YUV420 = 0,  //YUV 420 format
 
@@ -322,7 +366,38 @@ namespace TTTRtc {
             (void)frame;
         }
     };
-    
+
+    class IAudioFrameObserver
+    {
+    public:
+        virtual ~IAudioFrameObserver() {}
+
+        // 本地麦克风采集的数据
+        virtual void onRecordAudioFrame(TAudioFrame* frame) 
+        {
+            (void)frame;
+        }
+
+        // 单路远端用户的数据
+        virtual void onPlaybackAudioFrame(int64_t userID, TAudioFrame* frame)
+        {
+            (void)userID;
+            (void)frame;
+        }
+
+        // 所有远端用户混音后的数据
+        virtual void onPlaybackMixedAudioFrame(TAudioFrame* frame)
+        {
+            (void)frame;
+        }
+
+        // 本地和远端混音后的数据
+        virtual void onMixedAudioFrame(TAudioFrame* frame)
+        {
+            (void)frame;
+        }
+    };
+
     struct RtcEngineContext
 	{
 		IRtcEngineEventHandler* eventHandler;
@@ -352,7 +427,7 @@ namespace TTTRtc {
         virtual int setServerAddr(const char* addr, uint16_t port) = 0;
         virtual int configPublisher(const PublisherConfig& config) = 0;
 
-        virtual int joinChannel(int64_t channelID, char *channelName, int64_t userID) = 0;
+        virtual int joinChannel(int64_t channelID, const char *channelName, int64_t userID) = 0;
         virtual int leaveChannel() = 0;
         virtual int applySpeak() = 0;
 
@@ -362,12 +437,15 @@ namespace TTTRtc {
         //音视频模式下，主播需要在进入房间前最少创建一路本地视频
         //创建视频需要在进入房间前或进入房间成功后，请勿在进房间过程中创建
         //return mediaID
+		//跨房间连麦时不支持调用此接口
         virtual char* createLocalVideo(LocalVideoConfig& config) = 0;
+		//跨房间连麦时不支持调用此接口
         virtual void releaseLocalVideo(const char* mediaID) = 0;
+
         virtual void reconfigLocalVideo(const char* mediaID, LocalVideoConfig& config) = 0;
         virtual int startPreview(const char *mediaID) = 0;
         virtual int stopPreview(const char *mediaID) = 0;
-        virtual void inputVideoFrame(const char* mediaID, VideoFrame *frame) = 0;
+        virtual void inputVideoFrame(const char* mediaID, TVideoFrame *frame) = 0;
 
         virtual IRtcPlayer* createRtcPlayer(int64_t userID) = 0; //TODO: userID???
         virtual void releaseRtcPlayer(IRtcPlayer* player) = 0;
@@ -385,59 +463,103 @@ namespace TTTRtc {
         virtual void setVideoMixerBackgroundImgUrl(const char *url) = 0;
         virtual void setVideoCompositingLayout(const VideoCompositingLayout& layout) = 0;
         virtual void setVideoCompositingLayout(const char* sei, const char* seiExt) = 0;
+		virtual int setVideoMixerParams(int32_t bitrate, int32_t fps, int32_t width, int32_t height) = 0;
+		virtual int	setAudioMixerParams(int bitrate, int samplerate, int channels) = 0;
+		virtual int	SetPreferAudioCodec(int audioCodec, int bitrate, int channels) = 0;
         
-        //禁言
-        virtual int muteRemoteSpeaking(int64_t userID, bool mute) = 0;
-        virtual int muteLocalAudioStream(bool mute) = 0;
-        virtual int muteRemoteAudioStream(int64_t userID, bool mute) = 0;
-        virtual int muteAllRemoteAudioStreams(bool mute) = 0;
 
         //暂未实现
         virtual int muteLocalVideoStream(const char* mediaID, bool mute) = 0;
         virtual int muteRemoteVideoStream(int64_t userID, const char* mediaID, bool mute) = 0;
         virtual int muteAllRemoteVideoStreams(bool mute) = 0;
         
-        //主播调用，赋予副播发言权限
-        virtual int grantSpeakPermission(int64_t userID, bool enable) = 0;
         virtual bool kickChannelUser(int64_t userID) = 0;
 
-		//音频库相关接口
-        virtual int setSpeakerphoneVolume(int volume) = 0;//设置自己的音量
-		virtual int setRecordDevice(int index) = 0;
-		virtual int setPlayDevice(int index) = 0;
-		virtual int setRecordVolume(int volume) = 0;
-		virtual int getNumOfPlayoutDevices() = 0;  //TODO: 与视频相关接口统一
+        // 发言权限：主播调用，允许或禁止副播发言
+        // TODO: 这俩接口功能一直，留一个即可
+        virtual int grantSpeakPermission(int64_t userID, bool enable) = 0;
+        virtual int muteRemoteSpeaking(int64_t userID, bool mute) = 0;  
+
+        // 音频场景
+        //virtual int setAudioProfile(AUDIO_PROFILE_TYPE 	profile,
+        //                            AUDIO_SCENARIO_TYPE scenario ) = 0;
+        
+        // 音量控制及汇报
+        virtual int enableAudioVolumeIndication(int interval) = 0;
+
+		// mode: 0/1/2/3 值越大检测越严格
+		virtual int enableAudioVad(int64_t userID, bool enable, int mode) = 0;
+        virtual int adjustLocalAudioVolume(int volume) = 0;      // 调节信号强度,原始为100 
+        virtual int adjustRemoteAudioVolume(int64_t userID, int volume) = 0;
+        virtual int adjustRemoteAudioMixedVolume(int volume) = 0;
+
+        virtual int muteLocalAudioStream(bool mute) = 0;
+        virtual int muteRemoteAudioStream(int64_t userID, bool mute) = 0;
+        virtual int muteAllRemoteAudioStreams(bool mute) = 0;
+
+        // 耳返
+        virtual int enableEarphoneMonitor(int enable) = 0;
+        virtual int adjustEarphoneMonitorVolume(int volume) = 0;
+
+        // 音频设备管理
+		virtual int getNumOfPlayoutDevices() = 0; 
 		virtual int getNumOfRecordingDevices() = 0;
 		virtual int getPlayoutDeviceName(int index, char* deviceName) = 0;
 		virtual int getRecordingDeviceName(int index, char* deviceName) = 0;
-		virtual void pauseAudio() = 0;
-		virtual void resumeAudio() = 0;
+		virtual int setPlayoutDevice(int index) = 0;
+        virtual int setRecordingDevice(int index) = 0;
+        virtual int setSpeakerVolume(int volume) = 0;       // 设置应用程序播放音量
+        virtual int getSpeakerVolume(int* volume) = 0;
+		virtual int setMicrophoneVolume(int volume) = 0;    // 设置系统麦克风音量
+		virtual int getMicrophoneVolume(int* volume) = 0; 
 
-        //TODO: 目前仅支持固定的PCM格式；后续可以将重采样工作放到音频模块中，以支持不同的PCM格式
-        virtual void getSupportedPcmInfo(int& samples_per_channel, int& samplerate, int& channels) = 0;
-        //virtual void inputPcmFrame(const char* data, int samples_per_channel, int samplerate, int channels) = 0;
-        virtual int registerPcmSource(getPcmDataFunc func, void* userdata) = 0;
-        virtual void unregisterPcmSource(int id) = 0;
-
-        //控制音量汇报间隔
-		virtual int enableAudioVolumeIndication(int interval, int smooth) = 0;
-
-		virtual int startAudioMixing(const char* filePath, bool loopback, bool replace, int cycle) = 0;
-		virtual int stopAudioMixing() = 0;
-		virtual int pauseAudioMixing() = 0;
-		virtual int resumeAudioMixing() = 0;
-		virtual int adjustAudioMixingVolume(int volume) = 0;
-		virtual int getAudioMixingDuration() = 0;
-		virtual int getAudioMixingCurrentPosition() = 0;
-		virtual int setAudioMixingPosition(int volume) = 0;
-
-		virtual int setHighQualityAudioParameters(bool enable) = 0;
-		
-        virtual int sendChatMessage(int64_t nDstUserID, int type, char*  sData) = 0;
 		virtual int startRecordingDeviceTest(int indicationInterval) = 0;
 		virtual int stopRecordingDeviceTest() = 0;
 		virtual int startPlaybackDeviceTest(const char* testAudioFilePath) = 0;
 		virtual int stopPlaybackDeviceTest() = 0;
+
+        // 自定义音频源
+        virtual int createExtAudioSource(ExtAudioConfig* config) = 0;
+        virtual int releaseExtAudioSource(int id) = 0;
+        virtual int reconfigExtAudio(int id, ExtAudioConfig* config) = 0;
+        virtual int pushExtAudioFrame(int id, TAudioFrame* frame) = 0;
+        virtual int clearExtAudioCache(int id) = 0;
+        virtual int setExtAudioPauesd(int id, int paused) = 0;
+        virtual int adjustExtAudioVolume(int id,
+                                        int playout_volume,
+                                        int publish_volume) = 0;
+
+        // 音乐文件播放及混音
+        // struct AudioMixingConfig
+        virtual int startAudioMixing(AudioMixingConfig* config) = 0;
+        virtual int stopAudioMixing() = 0;
+        virtual int pauseAudioMixing() = 0;
+        virtual int resumeAudioMixing() = 0;
+        virtual int adjustAudioMixingVolume(int volume) = 0;
+        virtual int adjustAudioMixingPlayoutVolume(int volume) = 0;
+        virtual int adjustAudioMixingPublishVolume(int volume) = 0;
+        virtual int getAudioMixingDuration() = 0;
+        virtual int getAudioMixingCurrentPosition() = 0;
+        virtual int setAudioMixingPosition(int pos) = 0;
+
+        // 音效管理
+        virtual int loadAudioEffect(const char* filePath) = 0;  //失败返回0，成功返回id
+        virtual int unloadAudioEffect(int id) = 0;
+        virtual int playAudioEffect(int id, int loop_count, bool publish) = 0;
+        virtual int stopAudioEffect(int id) = 0;
+        virtual int pauseAudioEffect(int id) = 0;
+        virtual int resumeAudioEffect(int id) = 0;
+        virtual int setAudioEffectVolume(int id, int volume) = 0;
+        virtual int getAudioEffectVolume(int id, int &volume) = 0;
+
+        // 录音
+        virtual int startAudioRecording(const char* filepath, AUDIO_RECORDING_QUALITY quality) = 0;
+        virtual int stopAudioRecording() = 0;
+
+
+		//virtual int setHighQualityAudioParameters(bool enable) = 0;
+		
+        virtual int sendChatMessage(int64_t nDstUserID, int type, char*  sData) = 0;
 
 		/**
 		* 请求和远端房间连麦
@@ -462,6 +584,8 @@ namespace TTTRtc {
         //virtual void StopPlay() = 0;
 		virtual int startPushScreenCaptureRect(int iOffsetX, int iOffsetY, int iWidth, int iHeight, AV_PUSH_TYPE type = AV_PUSH_CDN, const char* mp4FilePath = NULL, const char *mCDNPullAddress = NULL) = 0;
 		virtual int stopPushScreenCapture() = 0;
+		virtual int startPushLocalVideo(LocalVideoConfig& config, AV_PUSH_TYPE type, const char* mp4FilePath, const char *mCDNPullAddress) = 0;
+		virtual int stopPushLocalVideo() = 0;
 
 		/**
 		* 视频是否上行到混屏
@@ -470,7 +594,17 @@ namespace TTTRtc {
 		* @param enable  true 上行本视频到混屏  false 本视频不上行到混屏
 		*/
 		virtual int enableVideoMixer(const char* mediaID, bool enable) = 0;
-
+		/**
+		* 更新当前频道所使用的token。如果启用了 Token 机制，过一段时间后使用的 Token 会失效。<br/>
+		* 发生 onTokenPrivilegeWillExpire 回调时，应重新获取 Token，然后调用该 API 更新 Token，否则 SDK 无法和服务器建立连接。
+		*
+		* @param token token值
+		* @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+		*/
+		virtual int renewToken(const char *token) = 0;
+		virtual int addVideoWatermark(const RtcImage & 	watermark) = 0;
+		virtual int clearVideoWatermarks() = 0;
+		virtual int getConnectionState() = 0; //网络状态 断线还是重连
 	};
 }//namespace TTTRtc
 #endif

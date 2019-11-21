@@ -6,7 +6,7 @@
 #include "SpeakerTesting.h"
 #include "afxdialogex.h"
 #include "C3TLocalUserInfo.h"
-#include "MyAudioApi.h"
+//#include "MyAudioApi.h"
 #include  "Common.h"
 using namespace TTTRtc;
 extern IRtcEngine* g_TTTEngine;
@@ -105,18 +105,25 @@ void CSpeakerTesting::OnBnClickedPlayMusic()
 	if (played == false)
 	{
 		int cur = m_comboSpeakerEnum.GetCurSel();
+		if (cur < 0) {
+			return;
+		}
 		std::string name = m_mapDeviceIDs.find(cur)->second;
 		//std::wstring wname = ws_techapi::s2ws(name);
 
 		//GS_SetDefaultDevice(wname.c_str());
 		//setPlaybackDevice(name.c_str());
-		g_TTTEngine->setPlayDevice(m_comboSpeakerEnum.GetCurSel());
+		g_TTTEngine->setPlayoutDevice(m_comboSpeakerEnum.GetCurSel());
 		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
 		GetModuleFileName(NULL, szFilePath, MAX_PATH);
 		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
 		CString str_url = szFilePath;
-		str_url.Append("TestSnd.wav");
-		g_TTTEngine->startPlaybackDeviceTest(str_url.GetBuffer(str_url.GetLength()));//  "TestSnd.wav");
+		//str_url.Append("TestSnd.wav");
+		str_url.Append("01.mp3");
+
+		std::string s_utf8 = ws_techapi::s2utf8(str_url.GetBuffer(str_url.GetLength()));
+
+		g_TTTEngine->startPlaybackDeviceTest(s_utf8.c_str());//  "TestSnd.wav");
 	}
 	else 
 		g_TTTEngine->stopPlaybackDeviceTest();
@@ -147,7 +154,8 @@ void CSpeakerTesting::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	int volume = m_sliderVolumeSetting.GetPos();
-	SetSpeakerVolume(volume);
+	g_TTTEngine->setSpeakerVolume(volume);
+	//SetSpeakerVolume(volume);
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 

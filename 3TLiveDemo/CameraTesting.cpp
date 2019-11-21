@@ -91,7 +91,11 @@ void CCameraTesting::OnCurCameraSelchange()
 	cfg.height = 480;
 	cfg.width = 640;
 	cfg.framerate = 15;
+	cfg.bitrateKbps = 4000;
 	cfg.viewHwnd = m_videoShowCtrl.GetSafeHwnd();
+	if (cfg.devIndex < 0) {
+		return;
+	}
 
 	g_TTTEngine->startLocalVideoTest(cfg);
 }

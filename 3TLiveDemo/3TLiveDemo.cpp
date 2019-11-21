@@ -34,7 +34,6 @@ CMy3TLiveDemoApp theApp;
 
 
 // CMy3TLiveDemoApp 初始化
-typedef int(*WSInstallCrashRpt)(LPCWSTR AppName, LPCWSTR AppVersion);
 
 BOOL CMy3TLiveDemoApp::InitInstance()
 {
@@ -63,13 +62,6 @@ BOOL CMy3TLiveDemoApp::InitInstance()
 
 //
 
-	HINSTANCE m_phDLLHdl =	NULL;
-	m_phDLLHdl = LoadLibrary("WS_CrashRpt1403.dll");  //加载 DLL文件  
-	if (m_phDLLHdl) {
-		WSInstallCrashRpt myCrashRpt = (WSInstallCrashRpt)GetProcAddress(m_phDLLHdl, "WSInstallCrashRpt");
-		myCrashRpt(L"3TLiveDemo", L"tttRTC");
-	}
-
 
 	CMy3TLiveDemoDlg dlg;
 	m_pMainWnd = &dlg;
@@ -84,7 +76,6 @@ BOOL CMy3TLiveDemoApp::InitInstance()
 		// TODO: 在此放置处理何时用
 		//  “取消”来关闭对话框的代码
 	}
-	if (m_phDLLHdl != NULL) FreeLibrary(m_phDLLHdl);
 
 	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
 	//  而不是启动应用程序的消息泵。

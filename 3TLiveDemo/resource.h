@@ -24,6 +24,8 @@
 #define IDD_DLG_FAILURE                 156
 #define IDD_DLG_ANCHORLINK              158
 #define IDD_DLG_SERVER_SETTING          162
+#define IDD_DIALOG6                     164
+#define IDD_INPUTBOX                    165
 #define IDC_EDIT_ROOMID                 1003
 #define IDC_RADIO_M                     1004
 #define IDC_RADIO_B                     1005
@@ -64,6 +66,7 @@
 #define IDC_BTN_MP4_PLAY                1047
 #define IDC_RADIO1                      1048
 #define IDC_BTN_UPGRADE_CLIENTROLE      1049
+#define IDC_BTN_PUSHCREEN               1049
 #define IDC_BTN_MUTE_UNMUTE_2           1050
 #define IDC_STATIC_MP4                  1050
 #define IDC_RADIO2                      1051
@@ -82,30 +85,68 @@
 #define IDC_CHECK1                      1057
 #define IDC_BTN_AnchorLink              1057
 #define IDC_TAB_TESTING                 1058
+#define IDC_BTN_UPGRADE_CLIENTROLE2     1058
 #define IDC_COMBO2                      1059
 #define IDC_STATIC_TEST_VIDEO_SHOW      1059
+#define IDC_BTN_MUTE_REMOTE_AUDIO2      1059
+#define IDC_BTN_MUTE_ALL_REMOTE_AUDIO   1059
 #define IDC_COMBO3                      1060
+#define IDC_STATIC_AUDIO_TEXT1          1060
 #define IDC_BUTTON3                     1061
 #define IDC_BUTTON4                     1062
 #define IDC_PROGRESS_MIC                1063
+#define IDC_STATIC_AUDIO_TEXT2          1063
 #define IDC_COMBO_MIC_LIST              1064
 #define IDC_BTN_SETVOLUME               1064
 #define IDC_SLIDER1                     1065
 #define IDC_BTN_SETSEI                  1065
 #define IDC_BTN_2_CAMERA                1066
 #define IDC_STATIC_MSG                  1067
+#define IDC_STATIC_AUDIO_TEXT3          1067
 #define IDC_STATIC_CAM_RESULT           1068
+#define IDC_BTN_2_CAMERA2               1068
+#define IDC_BTN_2_AUDIOEARBACK          1068
 #define IDC_STATIC_MIC_RESULT           1069
+#define IDC_BTN_2_AUDIOEARBACK2         1069
+#define IDC_BTN_2_WATERMARK             1069
 #define IDC_STATIC_SPEAKER_RESULT       1070
+#define IDC_STATIC_AUDIO_TEXT4          1070
 #define IDC_SLIDER_MICVOLUME            1071
 #define IDC_SLIDER_MICVOLUME2           1072
 #define IDC_MFCBUTTON1                  1072
 #define IDC_EDT_SERVER_ADDR             1073
+#define IDC_SLIDER_USER_VOLUME          1073
 #define IDC_EDT_SERVER_PORT             1074
+#define IDC_SLIDER_MP3_VOL              1074
 #define IDC_COMBO_APPID                 1075
+#define IDC_SLIDER_USER_VOLUME3         1075
+#define IDC_SLIDER_MP3_PUSHVOL          1075
 #define IDC_STATIC_DATASHARE            1076
 #define IDC_STATIC_DATASHARE2           1077
 #define IDC_STATIC_SEC_CAMERA           1077
+#define IDC_INPUTBOX                    1077
+#define IDC_VALUENAME                   1078
+#define IDC_SLIDER_MP3_PUSHVOL2         1078
+#define IDC_SLIDER_MP3_SEEK             1078
+#define IDC_SLIDER_MIX_VOLUME4          1079
+#define IDC_STATIC_VIDEO_TEXT6          1079
+#define IDC_STATIC_AUDIO_TEXT5          1079
+#define IDC_STATIC_VER                  1079
+#define IDC_SLIDER_MIX_VOLUME           1080
+#define IDC_SLIDER_EAR_VOLUME2          1081
+#define IDC_BTN_AUDIOEFFECT1            1081
+#define IDC_SLIDER_EARBACK_VOLUME       1082
+#define IDC_SLIDER_LOACAL_VOLUME2       1083
+#define IDC_SLIDER_LOACAL_VOLUME        1084
+#define IDC_SLIDER_PLAYOUTVOLUME        1085
+#define IDC_SLIDER_PUBLISHVOLUME        1086
+#define IDC_SLIDER_LOACAL_VOLUME5       1087
+#define IDC_BTN_AUDIOEFFECT2            1087
+#define IDC_SLIDER_SEEK                 1088
+#define IDC_BTN_AUDIOEFFECT5            1089
+#define IDC_BTN_AUDIOEFFECT41           1090
+#define IDC_BTN_AUDIOEFFECT4            1090
+#define IDC_BTN_AUDIOEFFECT3            1091
 #define ID_ACCELERATOR32772             32772
 #define ID_ACCELERATOR32775             32775
 
@@ -113,9 +154,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        164
+#define _APS_NEXT_RESOURCE_VALUE        166
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1077
+#define _APS_NEXT_CONTROL_VALUE         1080
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

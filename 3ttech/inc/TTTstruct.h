@@ -19,6 +19,18 @@ typedef enum {
 } CHANNEL_PROFILE_TYPE;
 
 typedef enum {
+	/*默认状态，没有连接*/
+	CONNECT_STATE_DEFAULT = 0,
+	CONNECT_STATE_CONNECTING,
+	CONNECT_STATE_CONNECTFAIL,
+	CONNECT_STATE_CONNECTED,
+	CONNECT_STATE_DISCONNECT,
+	CONNECT_STATE_RECONNECTTIMEOUT,
+	CONNECT_STATE_FORCE_DWORD = 0x7fffffff
+
+}CONNECT_STATE_TYPE;
+
+typedef enum {
 	/* 主播 */
     CLIENT_ROLE_BROADCASTER = 1,
 
@@ -40,6 +52,14 @@ typedef enum {
 	AV_PUSH_MP4_CDN = 3,
 	AV_PUSH_FORCE_DWORD = 0x7fffffff,
 } AV_PUSH_TYPE;
+
+typedef enum {
+    AUDIO_RECORDING_QUALITY_LOW = 0,
+    AUDIO_RECORDING_QUALITY_MEDIUM,
+    AUDIO_RECORDING_QUALITY_HIGH,
+
+    AUDIO_RECORDING_QUALITY_DWORD = 0x7fffffff,
+} AUDIO_RECORDING_QUALITY;
 
 
 typedef enum {
@@ -91,7 +111,7 @@ typedef enum {
 
     USER_EXIT_REASON_TIMEOUT = 201,   // 超时退出
     USER_EXIT_REASON_LINKCLOSE = 202, // 网络断开退出
-
+	PARAMERR = 203,            //参数错误
     RE_NEW_CHANNEL_KEY_FAILD = 401,  // 重新鉴权失败
 
     ERRCODE_FORCE_DWORD = 0x7fffffff, /* force 32-bit size enum */
@@ -113,9 +133,96 @@ typedef struct {
     int linesize[3];
     int32_t width;
     int32_t height;
-    int64_t pts;
+    int64_t timestamp;
     int32_t framerate;
-} VideoFrame;
+} TVideoFrame;
+
+typedef struct {
+    uint8_t* data;              //PCM 16bit little endian
+    int32_t length;             //samples_per_channel * num_channels * 2
+    int32_t num_channels;
+    int32_t samples_per_channel;  // 目前仅支持480的倍数
+    int32_t sample_rate_hz;     //16000 32000 48000  (暂不支持44100采样率)
+    int64_t timestamp;
+} TAudioFrame;
+
+typedef struct {
+    int32_t enable_playout;
+    int32_t enable_publish;
+    int32_t cache_ms;
+} ExtAudioConfig;
+
+typedef struct {
+    char filePath[512];
+    int32_t enable_playout;
+    int32_t enable_publish;
+    int32_t cycle;
+} AudioMixingConfig;
+
+typedef struct  {
+    int64_t user_id;
+    int level;
+} RemoteAudioLevel;
+typedef struct {
+    int id;
+    int playout_level;
+    int publish_level;
+} ExtAudioLevel;
+typedef struct {
+    // Local
+    int local_level;
+
+    // Remote
+    RemoteAudioLevel remote[32];
+    int remote_num;
+
+    // AudioMixing
+    int mixing_playout_level;
+    int mixing_publish_level;
+
+    // ExtAudio and AudioEffect
+    ExtAudioLevel external[32];
+    int external_num;
+} AudioLevelInfo;
+
+typedef struct {
+	int32_t muted;
+    int32_t muted_ms;    //总静音时长
+	int64_t cap_samples;                  // 总采样点数
+	int64_t bytes_encoded;
+	int32_t bitrate_kbps;
+    int32_t retrans_bitrate_kbps;
+    int32_t rtt_ms;
+    float fraction_lost;
+	int32_t audio_level;                 // FullRange
+    int32_t original_level;
+    float voluem_set;
+} LocalAudioStats;
+
+typedef struct {
+    int64_t userID;
+	uint32_t ssrc;
+	int32_t muted;
+    int32_t muted_ms;
+    int32_t remote_muted;  //muted by is self
+    int32_t bitrate_kbps;
+    int32_t rtt_ms;
+    int32_t audio_level;
+    float volume_set;
+
+    float lost_rate;
+    float fraction_lost;
+    int32_t delay_estimate_ms;
+    int32_t jitter_ms;
+    int32_t max_jitter_ms;
+    int32_t jitter_buffer_ms;
+
+	int64_t bytes_rcvd;
+    int64_t bytes_decoded;
+	int32_t carton_ms;
+    int32_t carton_count;
+    int32_t carton_rate;
+} RemoteAudioStats;
 
 typedef struct {
     int64_t userID;
@@ -129,6 +236,8 @@ typedef struct {
     int32_t height;     //编码输出视频高度
     int32_t framerate;  //编码输出视频帧率
 
+    int32_t bitrateKbps; //视频编码码率，为0时内部自行计算 h * w / 800
+
     /* for camera capture */
     int32_t devIndex;
 
@@ -139,10 +248,30 @@ typedef struct {
     } screenRect;
 
     /* for rawdata input */
-    int32_t srcWidth;
-    int32_t srcHeight;
+    int32_t srcWidth; //yuv 输入源视频宽
+    int32_t srcHeight; //yuv 输入视频源高
     int32_t srcFramerate;
 } LocalVideoConfig;
+
+typedef struct {
+    int32_t enable_video;
+    int32_t enable_audio;
+
+    // auddio
+    int32_t enable_playout;
+    int32_t enable_publish;
+    int playout_volume;
+    int publish_volume;
+
+    // video
+    void *viewHwnd;     //显示窗口句柄
+    int32_t width;      //输出视频宽度
+    int32_t height;     //输出视频高度
+    int32_t framerate;  //输出视频帧率
+
+    VIDEO_SCALE_TYPE encScaleType;      //编码输出裁剪方式
+    VIDEO_SCALE_TYPE renderScaleType;   //本地回显裁剪方式
+} RtcPlayerConfig;
 
 typedef struct {
     int64_t userID;
@@ -258,6 +387,43 @@ typedef struct {
     char appData[1024];
     int32_t appDataLength;
 } VideoCompositingLayout;
+
+typedef enum  {
+	kFlagPlayAudio = 0x00000001,
+	kFlagPlayVideo = 0x00000002,
+	kFlagLoopback = 0x00000004,
+
+	kFlagAll = 0x000000ff,
+} PlayerFlag;
+typedef struct {
+	float   volume;     //输出音频音量 0.0-2.0
+} AudioConfig;
+typedef struct  {
+	void *viewHwnd;     //显示窗口句柄
+	int32_t width;      //输出视频宽度
+	int32_t height;     //输出视频高度
+	int32_t framerate;  //输出视频帧率
+
+	VIDEO_SCALE_TYPE encScaleType;      //编码输出裁剪方式
+	VIDEO_SCALE_TYPE renderScaleType;   //本地回显裁剪方式
+} VideoConfig;
+
+typedef struct {
+	char url[1024]; //直播视频上图片的地址。字符长度不得超过 1024 字节。
+	int32_t x;      //水印或背景图片在视频帧左上角的横轴坐标。
+	int32_t y;     //水印或背景图片在视频帧左上角的纵轴坐标。
+	int32_t width;  //水印或背景图片在视频帧上的宽度。
+	int32_t height;  //水印或背景图片在视频帧上的高度。
+} RtcImage;
+typedef enum
+{
+	CODEC_DEFAULT = 0,
+	CODEC_AAC = 1,
+	CODEC_ISAC_WB = 2,
+	CODEC_ISAC_UWB = 3,
+	CODEC_OPUS = 4,
+	CODEC_HEAAC = 5
+} AUDIOCODEC;
 #pragma pack()
 
 #endif

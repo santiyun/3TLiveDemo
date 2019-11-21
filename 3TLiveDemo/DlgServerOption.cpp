@@ -17,7 +17,7 @@ CDlgServerOption::CDlgServerOption(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_SERVER_SETTING, pParent)
 	, m_csAddr(_T(""))
 	, m_iPort(5000)
-	, m_csAppID(_T(""))
+	, m_csAppID(_T("a967ac491e3acf92eed5e1b5ba641ab7"))
 {
 
 }
@@ -54,7 +54,7 @@ BOOL CDlgServerOption::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	m_comboAppID.ResetContent();
 	m_comboAppID.InsertString(0, "a967ac491e3acf92eed5e1b5ba641ab7");
-	
+
 	this->m_csAppID = g_LocalUser.m_sAppID.c_str();
 	m_iPort = g_LocalUser.m_iPort;
 	m_csAddr = g_LocalUser.m_sAddress.c_str();

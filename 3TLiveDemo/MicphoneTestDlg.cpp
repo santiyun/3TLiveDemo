@@ -6,7 +6,7 @@
 #include "MicphoneTestDlg.h"
 #include "afxdialogex.h"
 #include "C3TLocalUserInfo.h"
-#include "MyAudioApi.h"
+///#include "MyAudioApi.h"
 #include  "Common.h"
 using namespace TTTRtc;
 extern IRtcEngine* g_TTTEngine;
@@ -85,13 +85,16 @@ void CMicphoneTestDlg::OnSelchangeMicList()
 	//CString curDeviceName;
 	//m_comboMicphone.GetWindowTextA(curDeviceName);
 	int cur = m_comboMicphone.GetCurSel();
+	if (cur < 0)
+		return;
+
 	std::string name = m_mapDeviceIDs.find(cur)->second;
 	//std::string name = curDeviceName.GetBuffer(0);
 	//std::wstring wname = ws_techapi::s2ws(name);
 
 	//setRecordingDevice(name.c_str());
 	Sleep(2000);
-	g_TTTEngine->setRecordDevice(m_comboMicphone.GetCurSel());
+	g_TTTEngine->setRecordingDevice(m_comboMicphone.GetCurSel());
 
 	g_TTTEngine->startRecordingDeviceTest(1000);
 }
