@@ -1,0 +1,9 @@
+<xml>
+    <path>log</path>
+    <v2platform>
+        <level>5</level>
+        <basename>v2platform</basename>
+        <size>1024</size>
+    </v2platform>
+</xml>
+
