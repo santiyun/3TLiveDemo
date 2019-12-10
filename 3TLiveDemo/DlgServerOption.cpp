@@ -53,7 +53,8 @@ BOOL CDlgServerOption::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	m_comboAppID.ResetContent();
-	m_comboAppID.InsertString(0, "a967ac491e3acf92eed5e1b5ba641ab7");
+	m_comboAppID.InsertString(0, 请到官网申请APPID);
+	
 
 	this->m_csAppID = g_LocalUser.m_sAppID.c_str();
 	m_iPort = g_LocalUser.m_iPort;

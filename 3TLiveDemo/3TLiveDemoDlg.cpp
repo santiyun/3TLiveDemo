@@ -65,7 +65,7 @@ END_MESSAGE_MAP()
 CMy3TLiveDemoDlg::CMy3TLiveDemoDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMy3TLiveDemoDlg::IDD, pParent)
 	, m_sRoomID(_T("1231"))
-	, m_ClientRole(1)
+	, m_ClientRole(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }

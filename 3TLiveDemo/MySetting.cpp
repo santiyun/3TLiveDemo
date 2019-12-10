@@ -114,7 +114,16 @@ void CMySetting::OnBnClickedOk()
 	if (m_dlgServer.m_csAddr != "")
 		MessageBox(m_dlgServer.m_csAddr, "·þÎñÆ÷µØÖ·", MB_OK);
 	g_LocalUser.m_sAddress = m_dlgServer.m_csAddr;
-	g_LocalUser.m_sAppID = m_dlgServer.m_csAppID;
+	
+	////////
+	CString aaid;
+	m_dlgServer.m_comboAppID.GetWindowTextA(aaid);
+	
+	g_LocalUser.m_sAppID = aaid; //m_dlgServer.m_csAppID;
+
+	//MessageBox(g_LocalUser.m_sAppID.c_str());
+
+
 	g_LocalUser.m_bitrate = m_dlgLocalSetting.m_bitrate;
 	g_LocalUser.m_framerate = m_dlgLocalSetting.m_framerate;
 	g_LocalUser.m_pushSolution = m_dlgPushSetting.m_comboindex;
