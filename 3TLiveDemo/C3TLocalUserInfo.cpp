@@ -32,7 +32,7 @@ C3TLocalUserInfo::C3TLocalUserInfo()
 
 	m_sAddress = "";
 	m_iPort = 0;// 11000; //11000
-	m_sAppID = "a967ac491e3acf92eed5e1b5ba641ab7";
+	m_sAppID = «ÎµΩπŸÕ¯…Í«ÎAPPID;
 	
 	m_pushSolution = -1;
 	m_pushAudioSolution = -1;
