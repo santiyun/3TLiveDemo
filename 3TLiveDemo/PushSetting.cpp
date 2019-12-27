@@ -38,6 +38,15 @@ void CPushSetting::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT3, m_edtFramerate);
 }
 
+BOOL CPushSetting::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
+}
+
 
 BEGIN_MESSAGE_MAP(CPushSetting, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CPushSetting::OnCbnSelchangeComboSolution)
@@ -90,7 +99,7 @@ void CPushSetting::OnCbnSelchangeComboSolution()
 		m_edtFramerate.SetWindowTextA("15fps");
 		break;
 	case 2:
-		m_edtSize.SetWindowTextA("1920&1080");
+		m_edtSize.SetWindowTextA("1920*1080");
 		m_edtBitrate.SetWindowTextA("2080Kbps");
 		m_edtFramerate.SetWindowTextA("15fps");
 		break;

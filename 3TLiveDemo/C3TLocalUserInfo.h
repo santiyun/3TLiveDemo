@@ -12,7 +12,7 @@ public:
 	bool m_enableVideo;
 	bool m_enableAudio;
 	CLIENT_ROLE_TYPE  m_clientRole;
-	std::string m_roomID;
+	rid_ttt  m_roomID;
 	void* m_hWnd;
 	uid_ttt m_uid;
 	int m_renderMode;

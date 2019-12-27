@@ -13,6 +13,7 @@ class CSpeakerTesting : public CDialogEx
 public:
 	CSpeakerTesting(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CSpeakerTesting();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME

@@ -7,6 +7,8 @@
 class CCameraTesting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CCameraTesting)
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
 
 public:
 	CCameraTesting(CWnd* pParent = NULL);   // 标准构造函数

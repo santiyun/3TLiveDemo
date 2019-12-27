@@ -17,13 +17,22 @@ CDlgServerOption::CDlgServerOption(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_SERVER_SETTING, pParent)
 	, m_csAddr(_T(""))
 	, m_iPort(5000)
-	, m_csAppID(_T("a967ac491e3acf92eed5e1b5ba641ab7"))
+	, m_csAppID(_T(ÉêÇëµÄappid))
 {
 
 }
 
 CDlgServerOption::~CDlgServerOption()
 {
+}
+
+BOOL CDlgServerOption::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
 }
 
 void CDlgServerOption::DoDataExchange(CDataExchange* pDX)

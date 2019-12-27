@@ -11,6 +11,7 @@ class CLocalSetting : public CDialogEx
 public:
 	CLocalSetting(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CLocalSetting();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME

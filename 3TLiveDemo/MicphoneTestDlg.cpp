@@ -25,6 +25,16 @@ CMicphoneTestDlg::CMicphoneTestDlg(CWnd* pParent /*=NULL*/)
 
 CMicphoneTestDlg::~CMicphoneTestDlg()
 {
+	g_TTTEngine->stopRecordingDeviceTest();
+}
+
+BOOL CMicphoneTestDlg::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
 }
 
 void CMicphoneTestDlg::DoDataExchange(CDataExchange* pDX)
@@ -57,7 +67,7 @@ BOOL CMicphoneTestDlg::OnInitDialog()
 		{
 			char szDeviceName[256] = "";
 			char szDeviceID[256] = "";
-			int theResult = g_TTTEngine->getRecordingDeviceName(index, szDeviceName);//::getRecordingDevice(index, szDeviceName, szDeviceID);
+			int theResult = g_TTTEngine->getRecordingDeviceName(index, szDeviceName, szDeviceID);
 			std::string deviceName = szDeviceName;
 			std::wstring wdeviceName = ws_techapi::utf82ws(deviceName);
 			CString Name(wdeviceName.c_str());

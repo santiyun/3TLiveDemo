@@ -33,6 +33,9 @@ protected:
 	//TTTRtcEngine *m_pRtcEngine;
 	//RtcEngineContext_TTT context;
 	//CDialog2* pTestDlg;
+	CButton m_opt_ClientRoleM;
+	CButton m_opt_ClientRoleC;
+
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnKillfocusEditRoomid();
@@ -49,4 +52,10 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedMfcbutton1();
 	afx_msg void OnBnClickedBtnNewChannelNum();
+	afx_msg void OnBnClickedRadioC2();
+	afx_msg void OnBnClickedCheck1();
+
+	
+private:
+	int m_b_room_mode_communication;
 };

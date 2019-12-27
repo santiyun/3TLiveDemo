@@ -60,7 +60,7 @@ CDialog2::CDialog2(CWnd* pParent /*=NULL*/)
 	m_sharedata = false;
 	m_pushscreen = false;
 	m_secondMedia = "";
-	m_screen_width = "1080";
+	m_screen_width = "1280";
 	m_screen_height = "720";
 }
 long long stringToll(const std::string& strValue)
@@ -125,6 +125,18 @@ void CDialog2::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_MIC, m_btnMuteUnmuteMic);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_CAMERA, m_btnMuteUnmuteCamera);
 	DDX_Control(pDX, IDC_BTN_MP4_PLAY, m_btnPlayMp4);
+	DDX_Control(pDX, IDC_BTN_SETSEI, m_btnShareData);
+	DDX_Control(pDX, IDC_BTN_SETVOLUME, m_btnPlayMp3);
+	DDX_Control(pDX, IDC_BTN_2_CAMERA, m_btnSecondMedia);
+	DDX_Control(pDX, IDC_BTN_2_AUDIOEARBACK, m_btnEarback);
+	DDX_Control(pDX, IDC_BTN_2_WATERMARK, m_btnWatermark);
+
+
+
+
+	
+	
+	
 	DDX_Control(pDX, IDC_BTN_PUSHCREEN, m_btnPushScreen);
 	DDX_Control(pDX, IDC_BTN_MUTE_UNMUTE_NETSTAT, m_btnShowNetStat);
 	DDX_Control(pDX, IDC_BTN_UPGRADE_CLIENTROLE2, m_btnUpgradeClientrole);
@@ -174,7 +186,7 @@ int CDialog2::joinChannel()
 			g_TTTEngine->SetPreferAudioCodec(AUDIOCODEC::CODEC_ISAC_UWB, 24, 2);
 		}
 
-		int roomid = stringToll(g_LocalUser.m_roomID.c_str());
+		int roomid = g_LocalUser.m_roomID;
 		//59.110.220.79 iplocation 端口 11000
 		//g_TTTEngine->setServerAddr("47.106.248.181", 5000);
 		//g_TTTEngine->setServerAddr("edu.3ttech.cn", 11000);
@@ -251,6 +263,7 @@ int CDialog2::joinChannel()
 			cfg2.framerate = g_LocalUser.m_framerate;
 			break;
 		}
+		cfg2.bitrateKbps = g_LocalUser.m_bitrate;
 		CStatic   *pStatic = NULL;
 		int index = 0;
 		switch (g_LocalUser.m_clientRole)
@@ -282,10 +295,11 @@ int CDialog2::joinChannel()
 				//return -1;
 			}
 			//cfg2.viewHwnd = (void*)(-123);
-			cfg2.bitrateKbps = 0;
+			//cfg2.bitrateKbps = 0;
 			//IVideoDevice::getInfo(0, &cfg.devInfo);
 			if (count > 0) {
 			char* id = g_TTTEngine->createLocalVideo(cfg2);
+			m_openedCamera = true;
 			if (id) {
 				mediaID = id;
 			}
@@ -336,17 +350,23 @@ int CDialog2::joinChannel()
 		//std::string value;
 		//std::string s_utf8 = ws_techapi::s2utf8("不替换");
 		std::string s_pushurl = "rtmp:\/\/pushjs.3ttech.cn\/sdk\/";
-		s_pushurl.append(g_LocalUser.m_roomID);
+		
+		s_pushurl.append(ws_techapi::llToString(g_LocalUser.m_roomID));
 
 
 		//(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"请输入推流地址", s_pushurl, value));
 		//s_pushurl = value;
-		
+		m_streamUrl1 = s_pushurl;
 		PublisherConfig pushconfig;
 		memset(pushconfig.publishUrl, 0, 1024);
 		strcpy(pushconfig.publishUrl,s_pushurl.c_str());
 
 		g_LocalUser.m_pushUrl = s_pushurl;
+		
+		s_pushurl.append(ws_techapi::llToString(g_LocalUser.m_roomID));
+		m_streamUrl2 = s_pushurl; 
+
+
 		//"rtmp://push.3ttech.cn/sdk/";
 		//g_LocalUser.m_pushUrl = g_LocalUser.m_pushUrl + g_LocalUser.m_roomID;
 
@@ -358,7 +378,8 @@ int CDialog2::joinChannel()
 		//g_TTTEngine->SetPreferAudioCodec(4, 64, 2);
 		g_TTTEngine->configPublisher(pushconfig);
 
-		g_TTTEngine->joinChannel(stringToll(g_LocalUser.m_roomID.c_str()), "", g_LocalUser.m_uid);
+
+		g_TTTEngine->joinChannel(g_LocalUser.m_roomID, "", g_LocalUser.m_uid);
 	}
 	return nReponse;
 }
@@ -386,8 +407,16 @@ BEGIN_MESSAGE_MAP(CDialog2, CDialog)
 	ON_MESSAGE(WM_ON_MIXERVIDEO_CREATE, &CDialog2::OnMixerVideoCreate)
 	ON_REGISTERED_MESSAGE(WM_MYUPDATEDATA, &CDialog2::OnUpdateMyData) //OnUpdateMyData
 	ON_MESSAGE(WM_ON_RTMP_SENDERROR, &CDialog2::onRTMPsenderror)
+	ON_MESSAGE(WM_ON_TMPSTATUSCHANGE, &CDialog2::onRTMPStatusChange)
+	ON_MESSAGE(WM_ON_USERMUTEAUDIO, &CDialog2::onUserMuteAudio)
+	ON_MESSAGE(WM_ON_CONNECTSUCCESS, &CDialog2::OnConnectSuccess)
+	ON_MESSAGE(WM_ON_DISCONNECTED, &CDialog2::onDisconnected)
 
 
+	
+
+	
+	
 
 	ON_BN_CLICKED(IDC_STATIC_MAINVIDEO, &CDialog2::OnBnClickedStaticMainvideo)
 	ON_BN_DOUBLECLICKED(IDC_STATIC_MAINVIDEO, &CDialog2::OnBnDoubleclickedStaticMainvideo)
@@ -405,12 +434,15 @@ BEGIN_MESSAGE_MAP(CDialog2, CDialog)
 	ON_BN_CLICKED(IDC_BTN_UPGRADE_CLIENTROLE2, &CDialog2::OnClickedBtnUpgradeClientrole)
 	ON_BN_CLICKED(IDC_BTN_KICK_OUT, &CDialog2::OnClickedBtnKickOut)
 	ON_BN_CLICKED(IDC_BTN_MP4_PLAY, &CDialog2::OnClickedBtnMp4Play)
+
+
+	
 	ON_BN_CLICKED(IDC_BTN_PUSHCREEN, &CDialog2::OnClickedBtnPushScreen)
 	ON_BN_CLICKED(IDC_BUTTON3, &CDialog2::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CDialog2::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BTN_AnchorLink, &CDialog2::OnClickedBtnAnchorlink)
 	ON_BN_CLICKED(IDC_BTN_MUTE_REMOTE_VIDEO, &CDialog2::OnBnClickedBtnMuteRemoteVideo)
-	ON_BN_CLICKED(IDC_BTN_SETVOLUME, &CDialog2::OnBnClickedBtnSetvolume)
+	ON_BN_CLICKED(IDC_BTN_SETVOLUME, &CDialog2::OnBnClickedBtnOpenmp3)
 	ON_NOTIFY(NM_THEMECHANGED, IDC_SLIDER_MICVOLUME, &CDialog2::OnNMThemeChangedSliderMicvolume)
 	ON_WM_HSCROLL()
 	ON_WM_TIMER()
@@ -461,6 +493,8 @@ BOOL CDialog2::OnInitDialog()
 	m_MsgLst.InsertColumn(2, "备注", LVCFMT_LEFT, 100);
 
 	this->initLayout();
+	this->initLayout2();
+
 
 	// TODO:  在此添加额外的初始化
 	g_3TEngineEventHandler.SetMsgReceiver(this->GetSafeHwnd());
@@ -471,7 +505,7 @@ BOOL CDialog2::OnInitDialog()
 	m_sliderMicVolume.SetRange(0, 255, true);
 	m_sliderMicVolume.SetTicFreq(1);
 	m_sliderMicVolume.SetPos(160);
-	m_sliderSpeakerVolume.SetRange(0, 100, true);
+	m_sliderSpeakerVolume.SetRange(0, 255, true);
 	m_sliderSpeakerVolume.SetTicFreq(1);
 	m_sliderSpeakerVolume.SetPos(70);
 
@@ -487,7 +521,7 @@ BOOL CDialog2::OnInitDialog()
 	m_sliderEarbackVolume.SetTicFreq(1);
 	m_sliderEarbackVolume.SetPos(70);
 
-	m_sliderLocalVolume.SetRange(0, 100, true);
+	m_sliderLocalVolume.SetRange(0, 200, true);
 	m_sliderLocalVolume.SetTicFreq(1);
 	m_sliderLocalVolume.SetPos(70);
 
@@ -526,58 +560,65 @@ void CDialog2::OnIdclose()
 
 void CDialog2::ReleaseChannel()
 {
+	g_3TEngineEventHandler.SetMsgReceiver(NULL);
 	
-	{
-		int index = 1;
-		if (this->isLiveMaster())
-			index = 0;
-		g_TTTEngine->stopPreview(m_LivingMemberArray[index].mDeviceID.c_str());
-		g_TTTEngine->releaseLocalVideo(m_LivingMemberArray[index].mDeviceID.c_str());
-		g_TTTEngine->releaseLocalVideo(m_screenMedia.c_str());
-		m_screenMedia = "";
-		if (mPlayer && ("" != m_mp4Media)) {
-			mPlayer->stop();
-			mPlayer->close();
-			g_TTTEngine->releaseRtcPlayer(mPlayer);
-			mPlayer = NULL;
-		}
-		m_sharedata = false;
-		g_TTTEngine->releaseLocalVideo(m_secondMedia.c_str());
-		m_secondMedia = "";
-		
-		//g_TTTEngine->stopAudioRecording();
-		g_TTTEngine->stopPushScreenCapture();
-		m_pushscreen = false;
-		
-		//g_TTTEngine->releaseAllRemoteVideo();
-		if (g_3TEngineEventHandler.getMixerMID() != "")
-			g_TTTEngine->releaseMixerVideo(g_3TEngineEventHandler.getMixerMID().c_str());
-		g_3TEngineEventHandler.resetMixerMID();
-		ReleaseAllVideo();
-		if (m_mixing) {
-			TCHAR szFilePath[MAX_PATH + 1] = { 0 };
-			GetModuleFileName(NULL, szFilePath, MAX_PATH);
-			(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
-			CString str_url = szFilePath;  // 例如str_url==e:\program\Debug\
-			str_url.Append("\\01.mp3");
-			g_TTTEngine->stopAudioMixing();
-			m_mixing = false;
-		}
-		g_TTTEngine->clearVideoWatermarks();
-		g_TTTEngine->stopAudioEffect(m_AudioEffectid1);
-		g_TTTEngine->stopAudioEffect(m_AudioEffectid2);
-		g_TTTEngine->stopAudioEffect(m_AudioEffectid3);
-		g_TTTEngine->stopAudioEffect(m_AudioEffectid4);
-		g_TTTEngine->stopAudioEffect(m_AudioEffectid5);
-
-		g_TTTEngine->unloadAudioEffect(m_AudioEffectid1);
-		g_TTTEngine->unloadAudioEffect(m_AudioEffectid2);
-		g_TTTEngine->unloadAudioEffect(m_AudioEffectid3);
-		g_TTTEngine->unloadAudioEffect(m_AudioEffectid4);
-		g_TTTEngine->unloadAudioEffect(m_AudioEffectid5);
-
-		g_TTTEngine->leaveChannel();
+	int index = 1;
+	if (this->isLiveMaster())
+		index = 0;
+	g_TTTEngine->stopPreview(m_LivingMemberArray[index].mDeviceID.c_str());
+	g_TTTEngine->releaseLocalVideo(m_LivingMemberArray[index].mDeviceID.c_str());
+	g_TTTEngine->releaseLocalVideo(m_screenMedia.c_str());
+	m_screenMedia = "";
+	if (mPlayer && ("" != m_mp4Media)) {
+		mPlayer->stop();
+		mPlayer->close();
+		g_TTTEngine->releaseRtcPlayer(mPlayer);
+		mPlayer = NULL;
 	}
+	m_sharedata = false;
+	g_TTTEngine->releaseLocalVideo(m_secondMedia.c_str());
+	m_secondMedia = "";
+		
+	//g_TTTEngine->stopAudioRecording();
+	g_TTTEngine->stopPushScreenCapture();
+	m_pushscreen = false;
+		
+	//g_TTTEngine->releaseAllRemoteVideo();
+	if (g_3TEngineEventHandler.getMixerMID() != "")
+		g_TTTEngine->releaseMixerVideo(g_3TEngineEventHandler.getMixerMID().c_str());
+	g_3TEngineEventHandler.resetMixerMID();
+	ReleaseAllVideo();
+	g_TTTEngine->removePublishStreamUrl(m_streamUrl2.c_str());
+	g_TTTEngine->releaseMixerVideo(m_streamUrl2.c_str());
+	if (m_mixing) {
+		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+		GetModuleFileName(NULL, szFilePath, MAX_PATH);
+		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+		CString str_url = szFilePath;  // 例如str_url==e:\program\Debug\
+		str_url.Append("\\01.mp3");
+		g_TTTEngine->stopAudioMixing();
+		m_mixing = false;
+	}
+	g_TTTEngine->clearVideoWatermarks();
+	g_TTTEngine->stopAudioEffect(m_AudioEffectid1);
+	g_TTTEngine->stopAudioEffect(m_AudioEffectid2);
+	g_TTTEngine->stopAudioEffect(m_AudioEffectid3);
+	g_TTTEngine->stopAudioEffect(m_AudioEffectid4);
+	g_TTTEngine->stopAudioEffect(m_AudioEffectid5);
+
+	g_TTTEngine->unloadAudioEffect(m_AudioEffectid1);
+	g_TTTEngine->unloadAudioEffect(m_AudioEffectid2);
+	g_TTTEngine->unloadAudioEffect(m_AudioEffectid3);
+	g_TTTEngine->unloadAudioEffect(m_AudioEffectid4);
+	g_TTTEngine->unloadAudioEffect(m_AudioEffectid5);
+	g_TTTEngine->enableEarphoneMonitor(false);
+	g_TTTEngine->unsubscribeOtherChannel(m_llinkroomid);
+	if (g_LocalUser.m_bLocalAudioStream) {
+		g_TTTEngine->muteLocalAudioStream(false);
+		g_LocalUser.m_bLocalAudioStream = false;
+	}
+	g_TTTEngine->muteAllRemoteAudioStreams(false);
+	g_TTTEngine->leaveChannel();
 }
 
 
@@ -627,7 +668,7 @@ LRESULT CDialog2::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 
 
 
-	m_csRoomNum = g_LocalUser.m_roomID.c_str();
+	m_csRoomNum = ws_techapi::llToString(g_LocalUser.m_roomID).c_str();
 	std::string clientRole = "";
 	if (1 == g_LocalUser.m_clientRole) {
 		clientRole = "主播";
@@ -661,12 +702,14 @@ LRESULT CDialog2::OnJoinChannel(WPARAM wParam, LPARAM lParam)
 	}
 
 
+	g_TTTEngine->addPublishStreamUrl(m_streamUrl2.c_str());
+
 	m_LivingMemberArray[index].mUserID = g_LocalUser.m_uid;
 	addMixerVideo(uid, m_LivingMemberArray[index].mDeviceID.c_str(), isLiveMaster());
 
 	//addMixerVideo(uid, mediaID.c_str(), isLiveMaster());
 	g_TTTEngine->startPreview(m_LivingMemberArray[index].mDeviceID.c_str());
-	m_openedCamera = true;
+
 	//g_TTTEngine->startPreview(mediaID.c_str());
 	UserDeviceConfig udc(uid, m_LivingMemberArray[index].mDeviceID.c_str(), true);
 	udc.hwndindex = index;
@@ -839,6 +882,8 @@ LRESULT CDialog2::OnRemoteVideoEnable(WPARAM wParam, LPARAM lParam)
 			master = m_mapParticipants.at(uid).userRole == 1;
 
 		addMixerVideo(uid, mid.c_str(), master);
+		addMixerVideo2(uid, mid.c_str(), master);
+
 
 		//assert(index < 6);
 		UserDeviceConfig udc(uid, mid, true);
@@ -861,6 +906,7 @@ LRESULT CDialog2::OnRemoteVideoEnable(WPARAM wParam, LPARAM lParam)
 		if (index >= 0 && index < 50)  //原来是1，改成0了，应该把主播也考虑吧？需要检查一下
 		{
 			delMixerVideo(m_LivingMemberArray[index].mUserID, m_LivingMemberArray[index].mDeviceID.c_str());
+			delMixerVideo2(m_LivingMemberArray[index].mUserID, m_LivingMemberArray[index].mDeviceID.c_str());
 			m_LivingMemberArray[index].mUserID = 0;
 			m_LivingMemberArray[index].mDeviceID = "";
 			m_hWndsforClient[index] = 0;
@@ -935,8 +981,6 @@ LRESULT CDialog2::OnRemoteVideoState(WPARAM wParam, LPARAM lParam)
 	UpdateData(false);
 	delete lpData;
 	lpData = NULL;
-
-
 	//InsertMsgAndEvent("Event", "Rtc State", "OnRtcState");
 	return 0;
 }
@@ -1130,10 +1174,22 @@ void CDialog2::UpdateBtnStatus()
 	m_btnMuteRemoteAudio.EnableWindow(isLiveMaster());
 	m_btnKickOut.EnableWindow(isLiveMaster());
 	//m_btnPlayMp4.EnableWindow(isLiveMaster());
-	m_btnUpgradeClientrole.EnableWindow(isGuest());
+	m_btnUpgradeClientrole.EnableWindow(false);// isGuest());
 	m_btnAnchorLink.EnableWindow(isLiveMaster());
 	m_btnMuteUnmuteCamera.EnableWindow(isLiveParticipant() || isLiveMaster());
 	this->m_btnMuteUnmuteMic.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnPlayMp4.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnPlayMp3.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnShareData.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnSecondMedia.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnEarback.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnPushScreen.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnWatermark.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnAudioEffect1.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnAudioEffect2.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnAudioEffect3.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnAudioEffect4.EnableWindow(isLiveParticipant() || isLiveMaster());
+	m_btnAudioEffect5.EnableWindow(isLiveParticipant() || isLiveMaster());
 	this->m_btnMuteUnmuteSpeaker.EnableWindow(false);
 	return;
 }
@@ -1181,6 +1237,7 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 			
 			int index = getLocalVideoHwndindex();
 			delMixerVideo(g_LocalUser.m_uid, m_LivingMemberArray[index].mDeviceID.c_str());
+			delMixerVideo2(g_LocalUser.m_uid, m_LivingMemberArray[index].mDeviceID.c_str());
 			g_TTTEngine->releaseLocalVideo(m_LivingMemberArray[index].mDeviceID.c_str());
 			m_openedCamera = false;
 		}
@@ -1259,6 +1316,7 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 				cfg.framerate = g_LocalUser.m_framerate;
 				break;
 			}
+			cfg.bitrateKbps = g_LocalUser.m_bitrate;
 			if (VIDEO_CAPTURE_SCREEN == cfg.type){
 			cfg.screenRect.x = 0;
 			cfg.screenRect.y = 0;
@@ -1290,7 +1348,7 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 
 			//IVideoDevice::getInfo(0, &cfg.devInfo);
 			std::string mediaID = "";
-			cfg.bitrateKbps = 0;
+			//cfg.bitrateKbps = 0;
 			char* id = g_TTTEngine->createLocalVideo(cfg);
 			if (id) {
 				mediaID = id;
@@ -1301,6 +1359,7 @@ void CDialog2::OnClickedBtnMuteUnmuteCamera()
 			}
 
 			addMixerVideo(g_LocalUser.m_uid, mediaID.c_str(), isLiveMaster());
+			addMixerVideo2(g_LocalUser.m_uid, mediaID.c_str(), isLiveMaster());
 
 			g_TTTEngine->startPreview(mediaID.c_str());
 			UserDeviceConfig udc(g_LocalUser.m_uid, mediaID, true);
@@ -1388,15 +1447,20 @@ void CDialog2::OnClickedBtnKickOut()
 void CDialog2::OnClickedBtnMp4Play()
 {
 	//CString strFile = _T("");
-
-	CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp4)|*.mp4|All Files (*.*)|*.*||"), NULL);
+	static bool bModal = false;
+	if (bModal) {
+		return;
+	}
+	bModal = true;
+	CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp4)|*.mp4|All Files (*.*)|*.*||"), FromHandle(this->m_hWnd));
+	bModal = false;
 
 	//if (dlgFile.DoModal())
 	if (("" == m_mp4Media) && dlgFile.DoModal())
 	{
 		m_mp4Media = dlgFile.GetPathName();
 		//strFile = dlgFile.GetPathName();
-		if (g_TTTEngine != NULL)
+		if (g_TTTEngine != NULL )
 		{
 			mPlayer = g_TTTEngine->createRtcPlayer(g_LocalUser.m_uid);
 			RtcPlayerConfig mPConfig;
@@ -1418,31 +1482,35 @@ void CDialog2::OnClickedBtnMp4Play()
 			//m_mp4Media = strFile.GetBuffer(strFile.GetLength());
 			std::string s_utf8 = ws_techapi::s2utf8(m_mp4Media);
 
-			mPlayer->open(s_utf8.c_str(), &mPConfig);
+			mPlayer->open(s_utf8.c_str(),  &mPConfig);
 			mPlayer->start(1000);
-
+			
 			m_sliderSeek.SetRange(0, mPlayer->duration(), true);
 			m_sliderSeek.SetTicFreq(1);
 			m_sliderSeek.SetPos(mPlayer->position());
+			m_sliderPlayoutVolume.SetTicFreq(1);
+			m_sliderPlayoutVolume.SetPos(70);
+			if (mPlayer) {
+				mPlayer->adjustPlayoutVolume(m_sliderPlayoutVolume.GetPos());
+			}
 
+			}
 		}
+		else
+		{
+			m_mp4Media = "";
+			mPlayer->stop();
+			mPlayer->close();
+			g_TTTEngine->releaseRtcPlayer(mPlayer);
+			mPlayer = NULL;
 	}
-	else
-	{
-		m_mp4Media = "";
-		mPlayer->stop();
-		mPlayer->close();
-		g_TTTEngine->releaseRtcPlayer(mPlayer);
-		mPlayer = NULL;
 
-	}
 }
 
 void CDialog2::OnClickedBtnPushScreen()
 {
 	if (m_pushscreen == false)
 	{
-
 		std::string value;
 		(InputBox_GetString(GetModuleHandle(NULL), this->m_hWnd, L"屏幕的宽度", m_screen_width, value));
 		m_screen_width = value;
@@ -1483,8 +1551,12 @@ void CDialog2::OnClickedBtnPushScreen()
 		res  = g_TTTEngine->startPushScreenCaptureRect(0, 0, width, height, recordtype, s_mp4_path.c_str(), s_push_url.c_str());
 		if (int(PARAMERR) == res) {
 			MessageBox("参数错误！", "提示", MB_OK);
+			m_pushscreen = false;
+			g_TTTEngine->stopPushScreenCapture();
 		}
-		m_pushscreen = true;
+		else {
+			m_pushscreen = true;
+		}
 		//g_TTTEngine->startAudioRecording("aaa.aac", AUDIO_RECORDING_QUALITY::AUDIO_RECORDING_QUALITY_LOW);
 	}
 	else
@@ -1526,10 +1598,14 @@ void CDialog2::OnClickedBtnAnchorlink()
 	{
 		static CDialogAnchorLink dlg;
 		INT_PTR nResponse = dlg.DoModal();
+		if (dlg.m_llRoomID == g_LocalUser.m_roomID) {
+			return;
+		}
 		if (nResponse == IDOK)
 		{
 			g_TTTEngine->subscribeOtherChannel(dlg.m_llRoomID);
 			llinkroomid = dlg.m_llRoomID;
+			m_llinkroomid = dlg.m_llRoomID;
 			lluseid = dlg.m_llUserID;
 			linkotherRoom = true;
 			//g_TTTEngine->linkOtherAnchor(dlg.m_llRoomID, dlg.m_llUserID);
@@ -1538,11 +1614,11 @@ void CDialog2::OnClickedBtnAnchorlink()
 	else if (linkotherRoom == true)
 	{
 		std::string uid = ws_techapi::llToString(lluseid);
-
 		//g_TTTEngine->unlinkOtherAnchor(llinkroomid, lluseid, uid.c_str());
 		g_TTTEngine->unsubscribeOtherChannel(llinkroomid);
 		linkotherRoom = false;
 		llinkroomid = 0;
+		m_llinkroomid = 0;
 	}
 }
 
@@ -1563,7 +1639,7 @@ void CDialog2::OnBnClickedBtnMuteRemoteVideo()
 }
 
 
-void CDialog2::OnBnClickedBtnSetvolume()
+void CDialog2::OnBnClickedBtnOpenmp3()
 {
 	if (g_TTTEngine != NULL ) //&& m_Status == LiveStatus::STATUS_JOINED
 	{
@@ -1577,8 +1653,14 @@ void CDialog2::OnBnClickedBtnSetvolume()
 			static bool bOpenDialog = false;
 			std::string str_url = "";
 			if (bOpenDialog) {
+				static bool bModal = false;
+				if (bModal) {
+					return;
+				}
+				bModal = true;
 				CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.mp3)|*.mp3|All Files (*.*)|*.*||"), NULL);
 				dlgFile.DoModal();
+				bModal = false;
 				str_url = dlgFile.GetPathName();
 				if ("" == str_url) {
 					return;
@@ -1606,6 +1688,10 @@ void CDialog2::OnBnClickedBtnSetvolume()
 			m_sliderMp3Seek.SetRange(0, g_TTTEngine->getAudioMixingDuration(), true);
 			m_sliderMp3Seek.SetTicFreq(1);
 			m_sliderMp3Seek.SetPos(g_TTTEngine->getAudioMixingCurrentPosition());
+
+			m_sliderMp3Vol.SetTicFreq(1);
+			m_sliderMp3Vol.SetPos(70);
+			g_TTTEngine->adjustAudioMixingPlayoutVolume(m_sliderMp3Vol.GetPos());
 			m_mixing = true;
 		}
 	}
@@ -1633,7 +1719,7 @@ void CDialog2::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		break;
 	case IDC_SLIDER_MICVOLUME2:
 		//2019-6-24
-		g_TTTEngine->adjustLocalAudioVolume(m_sliderSpeakerVolume.GetPos());
+		g_TTTEngine->setSpeakerVolume(m_sliderSpeakerVolume.GetPos());
 		break;
 	case IDC_SLIDER_USER_VOLUME:
 		g_TTTEngine->adjustRemoteAudioVolume(m_LivingMemberArray[m_CurSelVideoIndex].mUserID, m_sliderUserVolume.GetPos());
@@ -1719,6 +1805,34 @@ void CDialog2::initLayout()
 	}
 }
 
+void CDialog2::initLayout2()
+{
+	memset(&m_vclayout2, 0, sizeof(VideoCompositingLayout));
+	m_vclayout2.canvasWidth = 640;
+	m_vclayout2.canvasHeight = 480;
+	strcpy(m_vclayout2.backgroundColor, "#FF0000");
+	m_vclayout2.regionCount = 0;
+
+	//mVideoRegins = 5;
+	VideoRegion *r;
+	r = &m_vclayout2.regions[0];
+	r->x = 0;
+	r->y = 0;
+	r->width = 1;
+	r->height = 1;
+	r->zOrder = 0;
+	r->alpha = 1;
+
+	for (int i = 1; i < 10; i++) {
+		r = &m_vclayout2.regions[i];
+		r->x = ((i - 1) % 3)*0.3;
+		r->y = ((i - 1) / 3)*0.5;
+		r->width = 0.3;
+		r->height = 0.5;
+		r->zOrder = 1;
+		r->alpha = 1;
+	}
+}
 
 BOOL CDialog2::PreTranslateMessage(MSG* pMsg)
 {
@@ -1755,6 +1869,7 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 		cfg.screenRect.w = GetSystemMetrics(SM_CXSCREEN);
 		cfg.screenRect.h = GetSystemMetrics(SM_CYSCREEN);
 		cfg.framerate = 5;
+		cfg.bitrateKbps = 0;
 		CStatic *pStatic = NULL;
 		pStatic = (CStatic*)GetDlgItem(IDC_STATIC_DATASHARE);
 		cfg.viewHwnd = pStatic->GetSafeHwnd();
@@ -1769,9 +1884,11 @@ void CDialog2::OnClickedBtnDataShare()  //屏幕分享
 		}
 		g_TTTEngine->startPreview(m_screenMedia.c_str());
 		m_sharedata = true;
+		addMixerVideo2(g_LocalUser.m_uid, m_screenMedia.c_str(), false);
 	}
 	else
 	{
+		delMixerVideo2(g_LocalUser.m_uid, m_screenMedia.c_str());
 		g_TTTEngine->stopPreview(m_screenMedia.c_str());
 		g_TTTEngine->releaseLocalVideo(m_screenMedia.c_str());
 		m_screenMedia = "";
@@ -1805,11 +1922,44 @@ void CDialog2::addMixerVideo(int64_t userID, const char *mediaID, bool isMaster)
 		r->userID = userID;
 		strcpy(r->mediaID, mediaID);
 		m_vclayout.regionCount = 7;// ++;
-		g_TTTEngine->setVideoCompositingLayout(m_vclayout);
+
 		g_TTTEngine->addVideoMixer(userID, mediaID);
+	    g_TTTEngine->setVideoCompositingLayout(m_vclayout);
 	}
 
 }
+
+void CDialog2::addMixerVideo2(int64_t userID, const char *mediaID, bool isMaster)
+{
+	VideoRegion *r = NULL;
+	if (isMaster) {
+		//自己的userid不一定为0
+		//if (m_vclayout.regions[0].userID != 0) {
+		//LOGI("Error: please del mix video 0 first\n");
+		//	return;
+		//}
+		r = &m_vclayout2.regions[0];
+	}
+	else {
+		for (int i = 1; i <9/* mVideoRegins*/; i++) {
+			if (m_vclayout2.regions[i].userID == 0) {
+				r = &m_vclayout2.regions[i];
+				break;
+			}
+		}
+	}
+
+	if (r) {
+		r->userID = userID;
+		strcpy(r->mediaID, mediaID);
+		m_vclayout2.regionCount = 7;// ++;
+
+		g_TTTEngine->addVideoMixer(userID, mediaID, m_streamUrl2.c_str());
+		g_TTTEngine->setVideoCompositingLayout(m_vclayout2, m_streamUrl2.c_str());
+	}
+
+}
+
 void CDialog2::delMixerVideo(int64_t userID, const char *mediaID)
 {
 	for (int i = m_vclayout.regionCount-1; i > -1 ; i--) {
@@ -1834,17 +1984,59 @@ void CDialog2::delMixerVideo(int64_t userID, const char *mediaID)
 		}
 	}
 }
+void CDialog2::delMixerVideo2(int64_t userID, const char *mediaID)
+{
+	for (int i = m_vclayout2.regionCount - 1; i > -1; i--) {
+		VideoRegion *r = &m_vclayout2.regions[i];
+		if ((r->userID == g_LocalUser.m_uid) && (1 == m_vclayout2.regionCount)) { //关闭自己的视频，要保留底图，矩形设0，避免停留最有一帧。
+			m_vclayout2.regions[0].x = 0;
+			m_vclayout2.regions[0].y = 0;
+			m_vclayout2.regions[0].height = 0;
+			m_vclayout2.regions[0].width = 0;
+			g_TTTEngine->setVideoCompositingLayout(m_vclayout2);//, m_streamUrl1.c_str()
+			initLayout2();
+			r->userID = 0;
+		}
+		else
+			if (r->userID == userID && !strcmp(r->mediaID, mediaID)) {
+				m_vclayout2.regionCount = 7;// --;
+				g_TTTEngine->delVideoMixer(userID, mediaID, m_streamUrl2.c_str());
+				r->userID = 0;
+				g_TTTEngine->setVideoCompositingLayout(m_vclayout2, m_streamUrl2.c_str());//, m_streamUrl1.c_str()
 
+				break;
+			}
+	}
+}
 LRESULT CDialog2::OnMixerVideoCreate(WPARAM wParam, LPARAM lParam)
 {
 	std::string mid = g_3TEngineEventHandler.getMixerMID();
+
+	RemoteMixVideoConfig* cfg = (RemoteMixVideoConfig*)wParam;
+	std::string mixerUrl = cfg->mixerUrl;
+	std::string mediaId = cfg->mediaID;
+
 	CStatic   *pStatic = NULL;
 	pStatic = (CStatic*)GetDlgItem(IDC_STATIC_MP4);
+
 	MixerVideoConfig config;
-	config.hwnd = pStatic->GetSafeHwnd();
-	strcpy(config.mediaID, mid.c_str());
+	if (m_streamUrl2 == mixerUrl) {
+		config.hwnd = pStatic->GetSafeHwnd();
+		g_TTTEngine->setVideoMixerBackgroundImgUrl("http://www.3ttech.cn/res/tpl/default/images/Home_slides_02_01.png", m_streamUrl2.c_str());
+
+		addMixerVideo2(g_LocalUser.m_uid, m_LivingMemberArray[0].mDeviceID.c_str(), isLiveMaster());
+		//addMixerVideo2(g_LocalUser.m_uid, m_screenMedia.c_str(), false);
+	}
+	else {
+		config.hwnd = pStatic->GetSafeHwnd();
+		delete cfg;
+		return 0;
+	}
+	strcpy(config.mediaID, mediaId.c_str());
+	//strcpy(config.mediaID, mid.c_str());
 	g_TTTEngine->createMixerVideo(config);
 	//g_TTTEngine->createMixerVideo(config);
+	delete cfg;
 	return 0;
 }
 
@@ -1879,8 +2071,14 @@ void CDialog2::OnBnClickedSetWaterMark()
 			watermark.height = 0;
 		}
 		if (1 == i) {
+			static bool bModal = false;
+			if (bModal) {
+				return;
+			}
+			bModal = true;
 			CFileDialog    dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("Describe Files (*.png)|*.png|All Files (*.*)|*.*||"), NULL);
 			dlgFile.DoModal();
+			bModal = false;
 			m_png_url = dlgFile.GetPathName();
 			if ("" == m_png_url) {
 				return;
@@ -1952,6 +2150,30 @@ LRESULT CDialog2::OnUpdateMyData(WPARAM wp, LPARAM lp)
 LRESULT CDialog2::onRTMPsenderror(WPARAM wParam, LPARAM lParam)
 {
 	InsertMsgAndEvent("Error", "RTMPsenderror!", "onRTMPsenderror");
+	return 0;
+}
+LRESULT CDialog2::onRTMPStatusChange(WPARAM wParam, LPARAM lParam)
+{
+	char buf[256] = { 0 };
+	sprintf(buf, "status = %d", int(lParam));
+	InsertMsgAndEvent("Message", "onRTMPStatusChange!", buf);
+	return 0;
+}
+LRESULT CDialog2::onUserMuteAudio(WPARAM wParam, LPARAM lParam)
+{
+	char buf[256] = { 0 };
+	sprintf(buf, "%d:%d", int(wParam),int(lParam));
+	InsertMsgAndEvent("Message", "onUserMuteAudio!", buf);
+	return 0;
+}
+LRESULT CDialog2::OnConnectSuccess(WPARAM wParam, LPARAM lParam)
+{
+	InsertMsgAndEvent("Message", "OnConnectSuccess!", "OnConnectSuccess");
+	return 0;
+}
+LRESULT CDialog2::onDisconnected(WPARAM wParam, LPARAM lParam)
+{
+	InsertMsgAndEvent("Message", "onDisconnected!", "onDisconnected");
 	return 0;
 }
 

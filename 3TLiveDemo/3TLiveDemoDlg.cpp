@@ -65,7 +65,8 @@ END_MESSAGE_MAP()
 CMy3TLiveDemoDlg::CMy3TLiveDemoDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CMy3TLiveDemoDlg::IDD, pParent)
 	, m_sRoomID(_T("1231"))
-	, m_ClientRole(0)
+	, m_ClientRole(1)
+	, m_b_room_mode_communication(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -80,6 +81,13 @@ void CMy3TLiveDemoDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Radio(pDX, IDC_RADIO_M, m_ClientRole);
 	DDV_MinMaxInt(pDX, m_ClientRole, 0, 2);
+	DDX_Check(pDX, IDC_CHECK_CHANNAL_MODE, m_b_room_mode_communication);
+	//DDX_Control(pDX, IDC_CHECK1, m_chkUseHighQualityAudio);
+	DDX_Control(pDX, IDC_RADIO_M, m_opt_ClientRoleM);
+	DDX_Control(pDX, IDC_RADIO_C , m_opt_ClientRoleC);
+
+
+
 }
 
 BEGIN_MESSAGE_MAP(CMy3TLiveDemoDlg, CDialog)
@@ -93,11 +101,18 @@ BEGIN_MESSAGE_MAP(CMy3TLiveDemoDlg, CDialog)
 	ON_BN_CLICKED(IDC_RADIO_M, &CMy3TLiveDemoDlg::OnClickedRadioM)
 	ON_BN_CLICKED(IDC_RADIO_B, &CMy3TLiveDemoDlg::OnClickedRadioM)
 	ON_BN_CLICKED(IDC_RADIO_C, &CMy3TLiveDemoDlg::OnClickedRadioM)
+	ON_BN_CLICKED(IDC_RADIO_C2, &CMy3TLiveDemoDlg::OnClickedRadioM)
+
+	
+
 	ON_BN_CLICKED(IDC_BTNSETTING, &CMy3TLiveDemoDlg::OnBnClickedBtnsetting)
 	ON_BN_CLICKED(IDC_BTNDEVICETEST, &CMy3TLiveDemoDlg::OnBnClickedBtndevicetest)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_MFCBUTTON1, &CMy3TLiveDemoDlg::OnBnClickedMfcbutton1)
 	ON_BN_CLICKED(IDC_BTNDEVICETEST2, &CMy3TLiveDemoDlg::OnBnClickedBtnNewChannelNum)
+	ON_BN_CLICKED(IDC_RADIO_C2, &CMy3TLiveDemoDlg::OnBnClickedRadioC2)
+	ON_BN_CLICKED(IDC_CHECK_CHANNAL_MODE, &CMy3TLiveDemoDlg::OnBnClickedCheck1)
+
 END_MESSAGE_MAP()
 
 
@@ -132,6 +147,11 @@ BOOL CMy3TLiveDemoDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+
+	CEdit *p_Edit;
+	p_Edit = (CEdit*)GetDlgItem(IDC_EDIT_ROOMID);
+	p_Edit->SetLimitText(18); 
+
 	// TODO: 在此添加额外的初始化代码
 	RtcEngineContext context;
 	g_TTTEngine = IRtcEngine::createInstance();
@@ -161,7 +181,7 @@ BOOL CMy3TLiveDemoDlg::OnInitDialog()
 		{
 			//初始化成功？
 			g_TTTEngine->setAppID(g_LocalUser.m_sAppID.c_str());
-			g_TTTEngine->setVideoMixerBackgroundImgUrl("http://3ttech.cn/res/tpl/default/images/bk.png");
+			//g_TTTEngine->setVideoMixerBackgroundImgUrl("http://3ttech.cn/res/tpl/default/images/bk.png");
 
 			int count = IVideoDevice::getCount();
 			g_LocalUser.m_vDeviceCount = count;
@@ -233,12 +253,19 @@ void CMy3TLiveDemoDlg::OnBnClickedOk()
 
 	//OnEnKillfocusEditRoomid();
 	std::string strvalue = this->m_sRoomID.GetBuffer(0);
-	if (!isdigit(strvalue) || ("" == strvalue)) {
-		MessageBox(strvalue.data(), "请输入正确的数字！");
+	rid_ttt roomId = 0;
+	try {
+		roomId = _atoi64(strvalue.c_str());
+	}
+	catch (...) {
+		roomId = 0;
+	}
+	if (0 == roomId) {
+		MessageBox( "会议号必须是大于0的整数！");
 		return;
 	}
-	else
-		g_LocalUser.m_roomID = strvalue;
+
+	g_LocalUser.m_roomID = roomId;
 
 	CDialog2 dlg;
 	dlg.m_bJoinChannel = true;
@@ -363,4 +390,25 @@ void CMy3TLiveDemoDlg::OnBnClickedBtnNewChannelNum()
 
 	this->m_sRoomID = uid.c_str();
 	UpdateData(false);
+}
+
+
+void CMy3TLiveDemoDlg::OnBnClickedRadioC2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+void CMy3TLiveDemoDlg::OnBnClickedCheck1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(TRUE);
+	if (m_b_room_mode_communication == 1) {
+		UpdateData(FALSE);
+		g_LocalUser.m_channelProfile = CHANNEL_PROFILE_COMMUNICATION;
+		g_LocalUser.m_clientRole = (CLIENT_ROLE_TYPE)(this->m_ClientRole + 1);
+	}
+	else
+	{
+		g_LocalUser.m_channelProfile = CHANNEL_PROFILE_LIVE_BROADCASTING;
+		g_LocalUser.m_clientRole = (CLIENT_ROLE_TYPE)(this->m_ClientRole + 1);
+	}
 }

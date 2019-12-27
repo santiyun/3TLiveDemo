@@ -22,6 +22,8 @@ public:
 
 	int joinChannel();
 	VideoCompositingLayout m_vclayout;
+	VideoCompositingLayout m_vclayout2;
+
 // 对话框数据
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG2 };
@@ -58,8 +60,10 @@ public:
 	afx_msg LRESULT OnUpdateMyData(WPARAM wp, LPARAM lp);
 	afx_msg LRESULT onRTMPsenderror(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT onAudioEffectFinished(WPARAM wParam, LPARAM lParam);
-
-	
+	afx_msg LRESULT onRTMPStatusChange(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onUserMuteAudio(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnConnectSuccess(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT onDisconnected(WPARAM wParam, LPARAM lParam);
 
 
 
@@ -78,6 +82,9 @@ private:
 	void addMixerVideo(int64_t userID, const char *mediaID, bool isMaster);
 	void delMixerVideo(int64_t userID, const char *mediaID);
 	void initLayout();
+	void addMixerVideo2(int64_t userID, const char *mediaID, bool isMaster);
+	void delMixerVideo2(int64_t userID, const char *mediaID);
+	void initLayout2();
 public:
 	CString m_csRoomNum;
 	CString m_csClientRole;
@@ -113,6 +120,10 @@ public:
 	int m_AudioEffectid4;
 	int m_AudioEffectid5;
 	std::string m_apppath;
+	std::string m_streamUrl1;
+	std::string m_streamUrl2;
+
+	LONGLONG  m_llinkroomid = 0;
 
 
 	CString m_Video0Info;
@@ -143,6 +154,12 @@ public:
 	CMFCButton m_btnMuteUnmuteMic;
 	CMFCButton m_btnMuteUnmuteCamera;
 	CMFCButton m_btnPlayMp4;
+	CMFCButton m_btnPlayMp3;
+	CMFCButton m_btnShareData;
+	CMFCButton m_btnSecondMedia;
+	CMFCButton m_btnEarback;
+	CMFCButton m_btnWatermark;
+
 	CMFCButton m_btnPushScreen;
 	CMFCButton m_btnShowNetStat;
 	CMFCButton m_btnUpgradeClientrole;
@@ -171,7 +188,7 @@ public:
 	afx_msg void OnClickedBtnAnchorlink();
 	CMFCButton m_btnAnchorLink;
 	afx_msg void OnBnClickedBtnMuteRemoteVideo();
-	afx_msg void OnBnClickedBtnSetvolume();
+	afx_msg void OnBnClickedBtnOpenmp3();
 	CSliderCtrl m_sliderMicVolume;
 	CSliderCtrl m_sliderSpeakerVolume;
 	CSliderCtrl m_sliderUserVolume;

@@ -17,6 +17,7 @@ class CTestDlg : public CDialogEx
 public:
 	CTestDlg(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CTestDlg();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME

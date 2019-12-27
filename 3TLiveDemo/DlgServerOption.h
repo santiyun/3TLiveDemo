@@ -11,6 +11,7 @@ class CDlgServerOption : public CDialogEx
 public:
 	CDlgServerOption(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CDlgServerOption();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME

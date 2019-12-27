@@ -108,6 +108,10 @@ void CMySetting::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(true);
+	m_dlgPushSetting.UpdateData(true);
+	m_dlgLocalSetting.UpdateData(true);
+	m_dlgServer.UpdateData(true);
+
 	g_LocalUser.m_videoProfile = m_dlgLocalSetting.m_videoResolution;
 	g_LocalUser.m_bUserHighQualityAudio = m_dlgLocalSetting.m_bUserHighQualityAudio;
 	g_LocalUser.m_iPort = m_dlgServer.m_iPort;

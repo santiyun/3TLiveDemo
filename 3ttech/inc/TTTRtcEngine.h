@@ -227,16 +227,21 @@ namespace TTTRtc {
 		*
 		* @param [in] userID     用户ID
 		* @param [in] mediaID	媒体ID
-		* @param [in] enabled	用户已启用/关闭了视频功能
+		* @param [in] enable	用户已启用/关闭了视频功能
 		*/
-		virtual void onUserEnableVideo(int64_t userID, const char *mediaID, int mediaType, bool enabled) {
+		virtual void onUserEnableVideo(int64_t userID, const char *mediaID, int mediaType, bool enable) {
             (void)userID;
             (void)mediaID;
-            (void)enabled;
+            (void)enable;
         }
-        virtual void onMixerVideoCreate(const char *mediaID) {
-            (void)mediaID;
-        }
+		virtual void onMixerVideoCreate(const char *mixerUrl, const char *mediaID) {
+			(void)mediaID;
+			(void)mixerUrl;
+		}
+		virtual void onMixerVideoRemove(const char *mixerUrl, const char *mediaID) {
+			(void)mediaID;
+			(void)mixerUrl;
+		}
 
         virtual void onAudioMixingFinished() {}
         virtual void onAudioEffectFinished(int id) {
@@ -315,7 +320,12 @@ namespace TTTRtc {
 		}
 		virtual void onRequestChannelKey() {
 		}
-		
+		virtual void onUserMuteAudio(int64_t userID, bool muted) {
+			(void)userID;
+			(void)muted;
+		}
+		virtual void OnConnectSuccess() {}
+		virtual void onDisconnected(const char * uuid) {}
 	};
     
     class IVideoFrameObserver
@@ -418,16 +428,15 @@ namespace TTTRtc {
 		virtual int initialize(RtcEngineContext& context) = 0;
         virtual void release() = 0;
         
-		virtual char* getVersion() = 0;
+		static char* getVersion();
         virtual int enableVideo() = 0;
         virtual int disableVideo() = 0; //需在没有本地或远程视频时调用
         virtual int setAppID(const char *appID) = 0;
 		virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) = 0;
 		virtual int setClientRole(CLIENT_ROLE_TYPE role, const char* permissionKey) = 0; //TODO:去掉无用参数
         virtual int setServerAddr(const char* addr, uint16_t port) = 0;
-        virtual int configPublisher(const PublisherConfig& config) = 0;
 
-        virtual int joinChannel(int64_t channelID, const char *channelName, int64_t userID) = 0;
+        virtual int joinChannel(int64_t channelID, const char *tokenid, int64_t userID) = 0;
         virtual int leaveChannel() = 0;
         virtual int applySpeak() = 0;
 
@@ -458,11 +467,15 @@ namespace TTTRtc {
         virtual void releaseMixerVideo(const char* mediaID) = 0;
         virtual int registerVideoFrameObserver(const char* mediaID, IVideoFrameObserver* observer) = 0;
 
-        virtual void addVideoMixer(int64_t nUserID, const char *mediaID) = 0;
-        virtual void delVideoMixer(int64_t nUserID, const char *mediaID) = 0;
-        virtual void setVideoMixerBackgroundImgUrl(const char *url) = 0;
-        virtual void setVideoCompositingLayout(const VideoCompositingLayout& layout) = 0;
-        virtual void setVideoCompositingLayout(const char* sei, const char* seiExt) = 0;
+		virtual int configPublisher(const PublisherConfig& config) = 0;
+		virtual void addPublishStreamUrl(const char* streamUrl) = 0; 
+		virtual void removePublishStreamUrl(const char* streamUrl) = 0;
+
+        virtual void addVideoMixer(int64_t nUserID, const char *mediaID, const char *streamUrl = nullptr) = 0;
+        virtual void delVideoMixer(int64_t nUserID, const char *mediaID, const char *streamUrl = nullptr) = 0;
+        virtual void setVideoMixerBackgroundImgUrl(const char *url, const char *streamUrl = nullptr ) = 0;
+        virtual void setVideoCompositingLayout(const VideoCompositingLayout& layout, const char* streamUrl = nullptr) = 0;
+        virtual void setVideoCompositingLayout(const char* sei, const char* seiExt, const char* streamUrl = nullptr) = 0;
 		virtual int setVideoMixerParams(int32_t bitrate, int32_t fps, int32_t width, int32_t height) = 0;
 		virtual int	setAudioMixerParams(int bitrate, int samplerate, int channels) = 0;
 		virtual int	SetPreferAudioCodec(int audioCodec, int bitrate, int channels) = 0;
@@ -504,8 +517,8 @@ namespace TTTRtc {
         // 音频设备管理
 		virtual int getNumOfPlayoutDevices() = 0; 
 		virtual int getNumOfRecordingDevices() = 0;
-		virtual int getPlayoutDeviceName(int index, char* deviceName) = 0;
-		virtual int getRecordingDeviceName(int index, char* deviceName) = 0;
+		virtual int getPlayoutDeviceName(int index, char* deviceName, char* devicePath) = 0;
+		virtual int getRecordingDeviceName(int index, char* deviceName, char* devicePath) = 0;
 		virtual int setPlayoutDevice(int index) = 0;
         virtual int setRecordingDevice(int index) = 0;
         virtual int setSpeakerVolume(int volume) = 0;       // 设置应用程序播放音量
@@ -524,7 +537,7 @@ namespace TTTRtc {
         virtual int reconfigExtAudio(int id, ExtAudioConfig* config) = 0;
         virtual int pushExtAudioFrame(int id, TAudioFrame* frame) = 0;
         virtual int clearExtAudioCache(int id) = 0;
-        virtual int setExtAudioPauesd(int id, int paused) = 0;
+        virtual int setExtAudioPaused(int id, int paused) = 0;
         virtual int adjustExtAudioVolume(int id,
                                         int playout_volume,
                                         int publish_volume) = 0;

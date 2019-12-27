@@ -57,11 +57,16 @@ void C3TEngineEventHandler::onError(int err, const char* msg)
 
 }
 
-void C3TEngineEventHandler::onMixerVideoCreate(const char *mediaID)
+void C3TEngineEventHandler::onMixerVideoCreate(const char *mixerUrl, const char *mediaID)
 {
-	mid = mediaID;
+	RemoteMixVideoConfig* cfg = new RemoteMixVideoConfig;
+	memset(cfg, 0, sizeof(RemoteMixVideoConfig));
+	memcpy(cfg->mediaID, mediaID, strlen(mediaID));
+	memcpy(cfg->mixerUrl, mixerUrl, strlen(mixerUrl));
+
+
 	if (m_hMainWnd != NULL)
-		::PostMessage(m_hMainWnd, WM_ON_MIXERVIDEO_CREATE, 0, 0);
+		::PostMessage(m_hMainWnd, WM_ON_MIXERVIDEO_CREATE, (WPARAM)cfg, 0);
 	return;
 }
 
@@ -317,6 +322,28 @@ void C3TEngineEventHandler::onRTMPsenderror(const char * err)
 	if (m_hMainWnd != NULL)
 		::PostMessage(m_hMainWnd, WM_ON_RTMP_SENDERROR, (WPARAM)0, 0);
 }
+void C3TEngineEventHandler::onRTMPStatusChange(long long roomID, const char * szRTMPURL, bool status)
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_TMPSTATUSCHANGE, 0, status? 1 : 0);
+}
+void C3TEngineEventHandler::onUserMuteAudio(int64_t userID, bool muted)
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_USERMUTEAUDIO, userID, muted?1:0);
+}
+void C3TEngineEventHandler::OnConnectSuccess()
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_CONNECTSUCCESS, 0, 0);
+}
+void C3TEngineEventHandler::onDisconnected(const char * uuid)
+{
+	if (m_hMainWnd != NULL)
+		::PostMessage(m_hMainWnd, WM_ON_DISCONNECTED, 0, 0);
+}
+
+
 void C3TEngineEventHandler::onAudioEffectFinished(int id)
 {
 	if (m_hMainWnd != NULL)
@@ -332,6 +359,7 @@ void C3TEngineEventHandler::onRequestChannelKey()
 		OutputDebugStringA(szDbg);
 	}
 }
+
 //void C3TEngineEventHandler::OnUserH264Push(const char* data, int len, const char* devId, long long ts, int width, int height, VideoFrameType_TTT frameType)
 //{
 //

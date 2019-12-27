@@ -33,6 +33,7 @@
 #define IDC_BTNSETTING                  1007
 #define IDC_BTNDEVICETEST               1008
 #define IDC_BTNDEVICETEST2              1009
+#define IDC_RADIO_C2                    1010
 #define IDC_STATIC3                     1011
 #define IDC_STATIC_MAINVIDEO            1021
 #define IDC_STATIC_VIDEO1               1022
@@ -133,6 +134,7 @@
 #define IDC_STATIC_AUDIO_TEXT5          1079
 #define IDC_STATIC_VER                  1079
 #define IDC_SLIDER_MIX_VOLUME           1080
+#define IDC_CHECK_CHANNAL_MODE          1080
 #define IDC_SLIDER_EAR_VOLUME2          1081
 #define IDC_BTN_AUDIOEFFECT1            1081
 #define IDC_SLIDER_EARBACK_VOLUME       1082
@@ -144,7 +146,6 @@
 #define IDC_BTN_AUDIOEFFECT2            1087
 #define IDC_SLIDER_SEEK                 1088
 #define IDC_BTN_AUDIOEFFECT5            1089
-#define IDC_BTN_AUDIOEFFECT41           1090
 #define IDC_BTN_AUDIOEFFECT4            1090
 #define IDC_BTN_AUDIOEFFECT3            1091
 #define ID_ACCELERATOR32772             32772
@@ -156,7 +157,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        166
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1080
+#define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -348,7 +348,11 @@ typedef struct {
     * @return the builder
     */
     char publishUrl[1024];
-} PublisherConfig;
+
+	//是否纯音频
+	int bAudioOnly;
+
+}PublisherConfig;
 
 /**
 * 画中画布局

@@ -19,6 +19,15 @@ extern C3TLocalUserInfo g_LocalUser;
 
 IMPLEMENT_DYNAMIC(CCameraTesting, CDialogEx)
 
+BOOL CCameraTesting::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
+}
+
 CCameraTesting::CCameraTesting(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_CAMERTEST, pParent)
 	, m_csDeviceName(_T(""))
@@ -60,7 +69,7 @@ BOOL CCameraTesting::OnInitDialog()
 			wchar_t szDeviceName[256] = L"";
 			VideoDeviceInfo devinfo;
 			int theResult = IVideoDevice::getInfo(index, &devinfo);
-			std::string deviceName = devinfo.frendlyName;
+			std::string deviceName = ws_techapi::utf82s(devinfo.frendlyName);
 			//unsigned int nameLength = sizeof(szDeviceName) / sizeof(szDeviceName[0]);
 			//::GS_GetVideoDeviceName(index, szDeviceName, &deviceType);
 			//std::wstring deviceName = szDeviceName;

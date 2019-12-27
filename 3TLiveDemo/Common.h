@@ -21,7 +21,10 @@ bool isdigit(std::string strValue);
 #define WM_ON_REMOTE_AUDIO_STATS		WM_USER+212
 #define WM_ON_RTMP_SENDERROR		    WM_USER+213
 #define WM_ON_EFFECTFINISHED		    WM_USER+214
-
+#define WM_ON_TMPSTATUSCHANGE		    WM_USER+215
+#define WM_ON_USERMUTEAUDIO             WM_USER+216
+#define WM_ON_CONNECTSUCCESS            WM_USER+217
+#define WM_ON_DISCONNECTED              WM_USER+218
 
 
 
@@ -36,6 +39,8 @@ enum LiveStatus
 };
 
 typedef  uint64_t  uid_ttt;
+typedef  uint64_t  rid_ttt;
+
 
 
 typedef struct _LivingMemberInfo {

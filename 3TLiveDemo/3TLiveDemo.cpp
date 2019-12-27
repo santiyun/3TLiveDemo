@@ -46,9 +46,8 @@ BOOL CMy3TLiveDemoApp::InitInstance()
 	// 公共控件类。
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
-
 	CWinAppEx::InitInstance();
-
+	AfxOleInit();
 	AfxEnableControlContainer();
 
 	// 标准初始化

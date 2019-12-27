@@ -29,6 +29,18 @@ CTestDlg::CTestDlg(CWnd* pParent /*=NULL*/)
 
 CTestDlg::~CTestDlg()
 {
+	g_TTTEngine->stopLocalVideoTest();
+	g_TTTEngine->stopRecordingDeviceTest();
+	g_TTTEngine->stopPlaybackDeviceTest();
+}
+
+BOOL CTestDlg::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
 }
 
 void CTestDlg::DoDataExchange(CDataExchange* pDX)

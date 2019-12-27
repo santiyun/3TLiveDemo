@@ -28,6 +28,15 @@ CLocalSetting::~CLocalSetting()
 {
 }
 
+BOOL CLocalSetting::PreTranslateMessage(MSG * pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE)
+	{
+		pMsg->wParam = 0;
+	}
+	return 0;
+}
+
 void CLocalSetting::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -92,7 +101,7 @@ void CLocalSetting::OnCbnSelchangeCombo1()
 		m_edtFramerateCtrl.SetWindowTextA("15");
 		break;
 	case 6:
-		m_edtResolutionCtrl.SetWindowTextA("1920&1080");
+		m_edtResolutionCtrl.SetWindowTextA("1920*1080");
 		m_edtRateCtrl.SetWindowTextA("4096");
 		m_edtFramerateCtrl.SetWindowTextA("30");
 		break;
