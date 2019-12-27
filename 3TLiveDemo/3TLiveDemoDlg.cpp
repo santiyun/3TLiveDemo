@@ -157,16 +157,16 @@ BOOL CMy3TLiveDemoDlg::OnInitDialog()
 	g_TTTEngine = IRtcEngine::createInstance();
 	//return TRUE;
 
+	std::wstring version = L"Ver: ";
+	std::wstring sdk_ver = ws_techapi::utf82ws(g_TTTEngine->getVersion());
+	version.append(sdk_ver.c_str());
+	m_sVer = version.c_str();
+	UpdateData(false);
 
 	HINSTANCE m_phDLLHdl = NULL;
 	m_phDLLHdl = LoadLibrary("WS_CrashRpt1403.dll");  //¼ÓÔØ DLLÎÄ¼þ  
 	if (m_phDLLHdl) {
 		WSInstallCrashRpt myCrashRpt = (WSInstallCrashRpt)GetProcAddress(m_phDLLHdl, "WSInstallCrashRpt");
-		std::wstring version = L"Ver: "; 
-		std::wstring sdk_ver = ws_techapi::utf82ws(g_TTTEngine->getVersion());
-		version.append(sdk_ver.c_str());
-		m_sVer = version.c_str();
-		UpdateData(false);
 		myCrashRpt(L"3TLiveDemo", sdk_ver.c_str());
 	}
 
