@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CPushSetting ¶Ô»°¿ò
+// CPushSetting å¯¹è¯æ¡†
 
 class CPushSetting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CPushSetting)
 
 public:
-	CPushSetting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CPushSetting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CPushSetting();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_PUSHSETTING };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	DECLARE_MESSAGE_MAP()
 public:

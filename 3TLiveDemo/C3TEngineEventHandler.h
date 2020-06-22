@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "TTTRtcEngine.h"
 #include "TTTstruct.h"
 
@@ -59,7 +59,7 @@ public:
 
 	//virtual void OnUserPcmPush(char *data, int samples_per_channel, int samplerate, int channels, int channelid);
 	//virtual void OnUserYuvPush(long long uid, unsigned char *YUV, unsigned int width, unsigned int height);
-	virtual void onMixerVideoCreate(const char *mixerUrl, const char *mediaID) override;
+	virtual void onMixerVideoCreate(const char *mediaID, const char *mixerUrl) override;
 	//virtual void onMixerVideoRemove(const char *mixerUrl, const char *mediaID) override;
 
 	virtual void onSetSEI(const char* SEI);
@@ -70,7 +70,6 @@ public:
 	virtual void onUserMuteAudio(int64_t userID, bool muted) override;
 	virtual void OnConnectSuccess()  override;
 	virtual void onDisconnected(const char * uuid)  override;
-
 
 private:
 	HWND		m_hMainWnd;

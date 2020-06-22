@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 
 
-// COptionDlg ¶Ô»°¿ò
+// COptionDlg å¯¹è¯æ¡†
 
 class COptionDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(COptionDlg)
 
 public:
-	COptionDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	COptionDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~COptionDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_FAILURE };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 };

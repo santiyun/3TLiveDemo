@@ -1,27 +1,27 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "PushSetting.h"
 #include "LocalSetting.h"
 #include "DlgServerOption.h"
 
 
-// CMySetting ¶Ô»°¿ò
+// CMySetting å¯¹è¯æ¡†
 
 class CMySetting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CMySetting)
 
 public:
-	CMySetting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CMySetting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CMySetting();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_SETTING };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

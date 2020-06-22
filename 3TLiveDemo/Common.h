@@ -1,4 +1,4 @@
-#ifndef __INTERNALIMPL_H__
+﻿#ifndef __INTERNALIMPL_H__
 #define __INTERNALIMPL_H__
 #include <string>
 #include <map>
@@ -42,7 +42,6 @@ typedef  uint64_t  uid_ttt;
 typedef  uint64_t  rid_ttt;
 
 
-
 typedef struct _LivingMemberInfo {
 	long mUserID = 0;
 	std::string mDeviceID = "";
@@ -51,7 +50,7 @@ typedef struct _LivingMemberInfo {
 
 struct  UserDeviceConfig
 {
-	UserDeviceConfig(long UerID, std::string DeviceID, bool IsUse) {
+	UserDeviceConfig(uid_ttt UerID, std::string DeviceID, bool IsUse) {
 		mUserID = UerID;
 		mDeviceID = DeviceID;
 		mIsUse = IsUse;
@@ -62,7 +61,7 @@ struct  UserDeviceConfig
 		hwndindex = 1;
 	}
 
-	long mUserID;
+	uid_ttt mUserID;
 	std::string mDeviceID;
 	bool mIsUse;
 	bool mIsOpen;
@@ -100,7 +99,7 @@ struct  UserDeviceConfig
 };
 
 typedef  std::map<std::string, UserDeviceConfig> PARTICIPANTSTREAMS;
-typedef  std::map<uint64_t, UserDeviceConfig> PARTICIPANTS;
+typedef  std::map<uid_ttt, UserDeviceConfig> PARTICIPANTS;
 typedef  std::map<int, std::string> DEVICEIDMAP;
 
 

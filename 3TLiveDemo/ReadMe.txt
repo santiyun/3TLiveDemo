@@ -1,66 +1,66 @@
 ================================================================================
-    MICROSOFT �������: 3TLiveDemo ��Ŀ����
+    MICROSOFT 基础类库: 3TLiveDemo 项目概述
 ===============================================================================
 
-Ӧ�ó�������Ϊ�������� 3TLiveDemo Ӧ�ó��򡣴�Ӧ�ó��򲻽���ʾʹ�� Microsoft ������Ļ���֪ʶ�����ҿ���Ϊ��дӦ�ó������㡣
+应用程序向导已为您创建此 3TLiveDemo 应用程序。此应用程序不仅演示使用 Microsoft 基础类的基本知识，而且可作为编写应用程序的起点。
 
-���ļ�������� 3TLiveDemo Ӧ�ó���ĸ����ļ�������ժҪ��
+此文件包含组成 3TLiveDemo 应用程序的各个文件的内容摘要。
 
 3TLiveDemo.vcproj
-    ����ʹ��Ӧ�ó��������ɵ� VC++ ��Ŀ������Ŀ�ļ���
-    �������й������ļ��� Visual C++ �汾����Ϣ���Լ��й�ʹ��Ӧ�ó�����ѡ���ƽ̨�����ú���Ŀ���ܵ���Ϣ��
+    这是使用应用程序向导生成的 VC++ 项目的主项目文件。
+    它包含有关生成文件的 Visual C++ 版本的信息，以及有关使用应用程序向导选择的平台、配置和项目功能的信息。
 
 3TLiveDemo.h
-    ����Ӧ�ó������Ҫͷ�ļ���������������Ŀ�ض���ͷ�ļ�(���� Resource.h)�������� CMy3TLiveDemoApp Ӧ�ó����ࡣ
+    这是应用程序的主要头文件。它包括其他项目特定的头文件(包括 Resource.h)，并声明 CMy3TLiveDemoApp 应用程序类。
 
 3TLiveDemo.cpp
-    ���ǰ���Ӧ�ó����� CMy3TLiveDemoApp ����ҪӦ�ó���Դ�ļ���
+    这是包含应用程序类 CMy3TLiveDemoApp 的主要应用程序源文件。
 
 3TLiveDemo.rc
-    ���ǳ���ʹ�õ����� Microsoft Windows ��Դ���б��������� RES ��Ŀ¼�д洢��ͼ�ꡢλͼ�͹�ꡣ���ļ�����ֱ���� Microsoft Visual C++ �н��б༭����Ŀ��Դλ�� 2052 �С�
+    这是程序使用的所有 Microsoft Windows 资源的列表。它包括 RES 子目录中存储的图标、位图和光标。此文件可以直接在 Microsoft Visual C++ 中进行编辑。项目资源位于 2052 中。
 
 res\3TLiveDemo.ico
-    ��������Ӧ�ó���ͼ���ͼ���ļ�����ͼ���������Ҫ��Դ�ļ� 3TLiveDemo.rc �С�
+    这是用作应用程序图标的图标文件。此图标包括在主要资源文件 3TLiveDemo.rc 中。
 
 res\My3TLiveDemo.rc2
-    ���ļ����������� Microsoft Visual C++ �༭����Դ����Ӧ�ý���������Դ�༭���༭��������Դ���ڴ��ļ��С�
+    此文件包含不是由 Microsoft Visual C++ 编辑的资源。您应该将不可由资源编辑器编辑的所有资源放在此文件中。
 
 
 /////////////////////////////////////////////////////////////////////////////
 
-Ӧ�ó����򵼴���һ���Ի�����:
+应用程序向导创建一个对话框类:
 
-3TLiveDemoDlg.h��3TLiveDemoDlg.cpp - �Ի���
-    ��Щ�ļ����� CMy3TLiveDemoDlg �ࡣ���ඨ��Ӧ�ó������Ի������Ϊ���öԻ����ģ��λ�� 3TLiveDemo.rc �У����ļ������� Microsoft Visual C++ �н��б༭��
+3TLiveDemoDlg.h，3TLiveDemoDlg.cpp - 对话框
+    这些文件包含 CMy3TLiveDemoDlg 类。该类定义应用程序主对话框的行为。该对话框的模板位于 3TLiveDemo.rc 中，该文件可以在 Microsoft Visual C++ 中进行编辑。
 
-
-/////////////////////////////////////////////////////////////////////////////
-
-��������:
-
-ActiveX �ؼ�
-    Ӧ�ó��������ʹ�� ActiveX �ؼ���֧�֡�
 
 /////////////////////////////////////////////////////////////////////////////
 
-������׼�ļ�:
+其他功能:
+
+ActiveX 控件
+    应用程序包括对使用 ActiveX 控件的支持。
+
+/////////////////////////////////////////////////////////////////////////////
+
+其他标准文件:
 
 StdAfx.h, StdAfx.cpp
-    ��Щ�ļ�����������Ϊ 3TLiveDemo.pch ��Ԥ����ͷ(PCH)�ļ�����Ϊ StdAfx.obj ��Ԥ���������ļ���
+    这些文件用于生成名为 3TLiveDemo.pch 的预编译头(PCH)文件和名为 StdAfx.obj 的预编译类型文件。
 
 Resource.h
-    ���Ǳ�׼ͷ�ļ�������������Դ ID��
-    Microsoft Visual C++ ����ȡ�����´��ļ���
+    这是标准头文件，它定义新资源 ID。
+    Microsoft Visual C++ 将读取并更新此文件。
 
 3TLiveDemo.manifest
-	Windows XP ʹ��Ӧ�ó����嵥�ļ�����Ӧ�ó���	���ض��汾���г��򼯵������ԡ����س���ʹ�ô�	��Ϣ�ӳ��򼯻��������Ӧ���򼯻�	��Ӧ�ó������˽����Ϣ��Ӧ�ó����嵥������Ϊ	��Ӧ�ó����ִ���ļ���װ��ͬһ�ļ����е��ⲿ .manifest �ļ����������Ա����·�����	Ҳ��������Դ����ʽ�����ڸÿ�ִ���ļ��С�
+	Windows XP 使用应用程序清单文件描述应用程序	对特定版本并行程序集的依赖性。加载程序使用此	信息从程序集缓存加载相应程序集或	从应用程序加载私有信息。应用程序清单可能作为	与应用程序可执行文件安装在同一文件夹中的外部 .manifest 文件包括在内以便重新发布，	也可能以资源的形式包括在该可执行文件中。
 /////////////////////////////////////////////////////////////////////////////
 
-����ע��:
+其他注释:
 
-Ӧ�ó�����ʹ�á�TODO:��ָʾӦ���ӻ��Զ����Դ���벿�֡�
+应用程序向导使用“TODO:”指示应添加或自定义的源代码部分。
 
-���Ӧ�ó����ڹ��� DLL ��ʹ�� MFC,����Ҫ���·��� MFC DLL�����Ӧ�ó������������ϵͳ���������ò�ͬ����Ҳ���������·�����Ӧ�ı��ػ���Դ MFC90XXX.DLL��
-�й��������������ϸ��Ϣ������� MSDN �ĵ����й����·��� Visual C++ Ӧ�ó���Ĳ��֡�
+如果应用程序在共享 DLL 中使用 MFC,则将需要重新发布 MFC DLL。如果应用程序所用与操作系统的区域设置不同，则也将必须重新发布对应的本地化资源 MFC90XXX.DLL。
+有关这两个主题的详细信息，请参阅 MSDN 文档中有关重新发布 Visual C++ 应用程序的部分。
 
 /////////////////////////////////////////////////////////////////////////////

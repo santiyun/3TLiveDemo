@@ -1,28 +1,28 @@
-//
-// 3TLiveDemoDlg.h : Í·ÎÄ¼ş
+ï»¿//
+// 3TLiveDemoDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
 
-// CMy3TLiveDemoDlg ¶Ô»°¿ò
+// CMy3TLiveDemoDlg å¯¹è¯æ¡†
 class CMy3TLiveDemoDlg : public CDialog
 {
-// ¹¹Ôì
+// æ„é€ 
 public:
-	CMy3TLiveDemoDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
+	CMy3TLiveDemoDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_MY3TLIVEDEMO_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -42,7 +42,7 @@ public:
 	CString m_sRoomID;
 	CString m_sVer;
 	afx_msg void OnBnClickedRadioM();
-	//  ÓÃ»§ÀàĞÍ£¬Ö÷²¥£¬¸±²¥£¬¹ÛÖÚ//  ÓÃ»§ÀàĞÍ£¬Ö÷²¥£¬¸±²¥£¬¹ÛÖÚ
+	//  ç”¨æˆ·ç±»å‹ï¼Œä¸»æ’­ï¼Œå‰¯æ’­ï¼Œè§‚ä¼—//  ç”¨æˆ·ç±»å‹ï¼Œä¸»æ’­ï¼Œå‰¯æ’­ï¼Œè§‚ä¼—
 	int m_ClientRole;
 	afx_msg void OnClickedRadioM();
 

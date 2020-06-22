@@ -1,4 +1,4 @@
-// MySetting.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// MySetting.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@ using namespace TTTRtc;
 extern C3TLocalUserInfo g_LocalUser;
 extern IRtcEngine* g_TTTEngine;
 
-// CMySetting ¶Ô»°¿ò
+// CMySetting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CMySetting, CDialogEx)
 
@@ -39,17 +39,17 @@ BEGIN_MESSAGE_MAP(CMySetting, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMySetting ÏûÏ¢´¦Àí³ÌĞò
+// CMySetting æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CMySetting::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
-	m_tabSetting.InsertItem(0, "±¾µØÉèÖÃ");
-	m_tabSetting.InsertItem(1, "ÍÆÁ÷ÉèÖÃ");
-	m_tabSetting.InsertItem(2, "·şÎñÆ÷ÉèÖÃ");
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
+	m_tabSetting.InsertItem(0, "æœ¬åœ°è®¾ç½®");
+	m_tabSetting.InsertItem(1, "æ¨æµè®¾ç½®");
+	m_tabSetting.InsertItem(2, "æœåŠ¡å™¨è®¾ç½®");
 
 	m_dlgPushSetting.Create(IDD_DLG_PUSHSETTING, &m_tabSetting);
 	m_dlgLocalSetting.Create(IDD_DLG_LOCALSETTING, &m_tabSetting);
@@ -73,13 +73,13 @@ BOOL CMySetting::OnInitDialog()
 	m_dlgServer.ShowWindow(false);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CMySetting::OnTcnSelchangeTabsetting(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	int cursel = m_tabSetting.GetCurSel();
 	switch (cursel)
 	{
@@ -106,7 +106,7 @@ void CMySetting::OnTcnSelchangeTabsetting(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMySetting::OnBnClickedOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	m_dlgPushSetting.UpdateData(true);
 	m_dlgLocalSetting.UpdateData(true);
@@ -114,9 +114,11 @@ void CMySetting::OnBnClickedOk()
 
 	g_LocalUser.m_videoProfile = m_dlgLocalSetting.m_videoResolution;
 	g_LocalUser.m_bUserHighQualityAudio = m_dlgLocalSetting.m_bUserHighQualityAudio;
+    g_LocalUser.m_bEnable_hwaccel = m_dlgLocalSetting.m_bEnable_hwaccel;
+    g_LocalUser.m_bEnable_mirror = m_dlgLocalSetting.m_bEnable_mirror;
 	g_LocalUser.m_iPort = m_dlgServer.m_iPort;
 	if (m_dlgServer.m_csAddr != "")
-		MessageBox(m_dlgServer.m_csAddr, "·şÎñÆ÷µØÖ·", MB_OK);
+		MessageBox(m_dlgServer.m_csAddr, "æœåŠ¡å™¨åœ°å€", MB_OK);
 	g_LocalUser.m_sAddress = m_dlgServer.m_csAddr;
 	
 	////////

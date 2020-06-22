@@ -1,4 +1,4 @@
-// LocalSetting.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// LocalSetting.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 extern C3TLocalUserInfo g_LocalUser;
 
 
-// CLocalSetting ¶Ô»°¿ò
+// CLocalSetting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CLocalSetting, CDialogEx)
 
@@ -20,6 +20,8 @@ CLocalSetting::CLocalSetting(CWnd* pParent /*=NULL*/)
 	, m_bUserHighQualityAudio(TRUE)
 	, m_bitrate(1103)
 	, m_framerate(15)
+    , m_bEnable_hwaccel(TRUE)
+    , m_bEnable_mirror(TRUE)
 {
 
 }
@@ -48,6 +50,10 @@ void CLocalSetting::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT3, m_edtFramerateCtrl);
 	DDX_Check(pDX, IDC_CHECK1, m_bUserHighQualityAudio);
 	DDX_Control(pDX, IDC_CHECK1, m_chkUseHighQualityAudio);
+    DDX_Control(pDX, IDC_CHECK_HW, m_chkEnable_hwaccel);
+    DDX_Check(pDX, IDC_CHECK_HW, m_bEnable_hwaccel);
+    DDX_Control(pDX, IDC_CHECK_MIRROR, m_chkEnable_mirror);
+    DDX_Check(pDX, IDC_CHECK_MIRROR, m_bEnable_mirror);
 	DDX_Text(pDX, IDC_EDIT2, m_bitrate);
 	DDX_Text(pDX, IDC_EDIT3, m_framerate);
 }
@@ -58,15 +64,16 @@ BEGIN_MESSAGE_MAP(CLocalSetting, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK1, &CLocalSetting::OnBnClickedCheck1)
 	ON_EN_KILLFOCUS(IDC_EDIT2, &CLocalSetting::OnEnKillfocusEdit2)
 	ON_EN_KILLFOCUS(IDC_EDIT3, &CLocalSetting::OnEnKillfocusEdit3)
+    ON_BN_CLICKED(IDC_CHECK_HW, &CLocalSetting::OnBnClickedCheckHW)
 END_MESSAGE_MAP()
 
 
-// CLocalSetting ÏûÏ¢´¦Àí³ÌĞò
+// CLocalSetting æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CLocalSetting::OnCbnSelchangeCombo1()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	switch (m_videoResolution)
 	{
@@ -123,30 +130,37 @@ BOOL CLocalSetting::OnInitDialog()
 	m_comboLevel.InsertString(6, "1080P");
 	m_comboLevel.SetCurSel(g_LocalUser.m_videoProfile);
 	m_chkUseHighQualityAudio.SetCheck(g_LocalUser.m_bUserHighQualityAudio);
+    m_chkEnable_hwaccel.SetCheck(g_LocalUser.m_bEnable_hwaccel);
+    m_chkEnable_mirror.SetCheck(g_LocalUser.m_bEnable_mirror);
 	OnCbnSelchangeCombo1();
 	//UpdateData(true);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CLocalSetting::OnBnClickedCheck1()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
+}
+void CLocalSetting::OnBnClickedCheckHW()
+{
+    // TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+    UpdateData(true);
 }
 
 
 void CLocalSetting::OnEnKillfocusEdit2()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 }
 
 
 void CLocalSetting::OnEnKillfocusEdit3()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 }

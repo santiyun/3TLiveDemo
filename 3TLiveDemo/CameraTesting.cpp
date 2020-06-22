@@ -1,4 +1,4 @@
-// CameraTesting.cpp : ÊµÏÖÎÄ¼þ
+ï»¿// CameraTesting.cpp : å®žçŽ°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -15,7 +15,7 @@ extern IRtcEngine* g_TTTEngine;
 
 extern C3TLocalUserInfo g_LocalUser;
 
-// CCameraTesting ¶Ô»°¿ò
+// CCameraTesting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CCameraTesting, CDialogEx)
 
@@ -53,14 +53,14 @@ BEGIN_MESSAGE_MAP(CCameraTesting, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CCameraTesting ÏûÏ¢´¦Àí³ÌÐò
+// CCameraTesting æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CCameraTesting::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	int num = IVideoDevice::getCount();
 	if (num > 0 )
 	{
@@ -83,17 +83,18 @@ BOOL CCameraTesting::OnInitDialog()
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôÐÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±žæ€§é¡µåº”è¿”å›ž FALSE
 }
 
 
 void CCameraTesting::OnCurCameraSelchange()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æŽ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	g_TTTEngine->stopLocalVideoTest();
 
 	LocalVideoConfig cfg;
+	memset(&cfg, 0, sizeof(cfg));
 	cfg.userID = g_LocalUser.m_uid;
 	cfg.type = VIDEO_CAPTURE_CAMERA;
 	cfg.devIndex = m_comboDeviceEnum.GetCurSel();

@@ -1,4 +1,4 @@
-// TestDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// TestDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -13,14 +13,14 @@ extern C3TLocalUserInfo g_LocalUser;
 extern C3TEngineEventHandler g_3TEngineEventHandler;
 
 
-// CTestDlg ¶Ô»°¿ò
+// CTestDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CTestDlg, CDialogEx)
 
 CTestDlg::CTestDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_TEST, pParent)
 	, m_csMsgShow(_T(""))
-	, m_csMsg(_T("ÊÇ·ñ¿ÉÒÔ¿´µ½ÊÓÆµ»­Ãæ£¿"))
+	, m_csMsg(_T("æ˜¯å¦å¯ä»¥çœ‹åˆ°è§†é¢‘ç”»é¢ï¼Ÿ"))
 {
 	m_bCamera = false;
 	m_bMicphone = false;
@@ -65,18 +65,18 @@ BEGIN_MESSAGE_MAP(CTestDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CTestDlg ÏûÏ¢´¦Àí³ÌĞò
+// CTestDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CTestDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
-	m_tabTestStepByStep.InsertItem(0, "ÉãÏñÍ·");
-	m_tabTestStepByStep.InsertItem(1, "Âó¿Ë·ç");
-	m_tabTestStepByStep.InsertItem(2, "ÑïÉùÆ÷");
-	m_tabTestStepByStep.InsertItem(3, "²âÊÔ½á¹û");
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
+	m_tabTestStepByStep.InsertItem(0, "æ‘„åƒå¤´");
+	m_tabTestStepByStep.InsertItem(1, "éº¦å…‹é£");
+	m_tabTestStepByStep.InsertItem(2, "æ‰¬å£°å™¨");
+	m_tabTestStepByStep.InsertItem(3, "æµ‹è¯•ç»“æœ");
 
 	m_dlgCameraTesting.Create(IDD_DLG_CAMERTEST, &m_tabTestStepByStep);
 	m_dlgMicphoneTesting.Create(IDD_DLG_MICPHONETEST, &m_tabTestStepByStep);
@@ -102,7 +102,7 @@ BOOL CTestDlg::OnInitDialog()
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void CTestDlg::UpdateTabStatus()
@@ -122,35 +122,35 @@ void CTestDlg::OnTcnSelchangeTabTesting(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 	case 0:
 		//g_TTTEngine->stopVideoDeviceTest();
-		this->m_csMsg = "ÊÇ·ñ¿ÉÒÔ¿´µ½ÊÓÆµ»­Ãæ£¿";
+		this->m_csMsg = "æ˜¯å¦å¯ä»¥çœ‹åˆ°è§†é¢‘ç”»é¢ï¼Ÿ";
 		this->m_dlgCameraTesting.OnCurCameraSelchange();
 		this->m_btnCheck.ShowWindow(SW_SHOW);
 		this->m_btnCheckError.ShowWindow(SW_SHOW);
-		this->m_btnCheck.SetWindowTextA("¿´µÃµ½");
-		this->m_btnCheckError.SetWindowTextA("¿´²»µ½");
+		this->m_btnCheck.SetWindowTextA("çœ‹å¾—åˆ°");
+		this->m_btnCheckError.SetWindowTextA("çœ‹ä¸åˆ°");
 		break;
 	case 1:
-		this->m_csMsg = "ÊÇ·ñ¿ÉÒÔ¿´µ½ÒôÁ¿²¨¶¯£¿";
+		this->m_csMsg = "æ˜¯å¦å¯ä»¥çœ‹åˆ°éŸ³é‡æ³¢åŠ¨ï¼Ÿ";
 		this->m_dlgMicphoneTesting.OnSelchangeMicList();
 		this->m_btnCheck.ShowWindow(SW_SHOW);
 		this->m_btnCheckError.ShowWindow(SW_SHOW);
-		this->m_btnCheck.SetWindowTextA("¿´µÃµ½");
-		this->m_btnCheckError.SetWindowTextA("¿´²»µ½");
+		this->m_btnCheck.SetWindowTextA("çœ‹å¾—åˆ°");
+		this->m_btnCheckError.SetWindowTextA("çœ‹ä¸åˆ°");
 		//g_TTTEngine->stopRecordingDeviceTest();
 		break;
 	case 2:
-		this->m_csMsg = "ÊÇ·ñ¿ÉÒÔÌıµ½ÉùÒô£¿";
+		this->m_csMsg = "æ˜¯å¦å¯ä»¥å¬åˆ°å£°éŸ³ï¼Ÿ";
 		this->m_dlgSpeading.OnSelchangeSpeaker();
 		this->m_btnCheck.ShowWindow(SW_SHOW);
 		this->m_btnCheckError.ShowWindow(SW_SHOW);
-		this->m_btnCheck.SetWindowTextA("ÌıµÃµ½");
-		this->m_btnCheckError.SetWindowTextA("Ìı²»µ½");
+		this->m_btnCheck.SetWindowTextA("å¬å¾—åˆ°");
+		this->m_btnCheckError.SetWindowTextA("å¬ä¸åˆ°");
 		break;
 	case 3:
 		m_dlgResult.showResult(m_bCamera, m_bMicphone, m_bSpeaker);
 		this->m_btnCheck.ShowWindow(SW_HIDE);
 		this->m_btnCheckError.ShowWindow(SW_HIDE);
-		this->m_btnCheckError.SetWindowTextA("È·¶¨");
+		this->m_btnCheckError.SetWindowTextA("ç¡®å®š");
 		break;
 	}
 	UpdateData(false);
@@ -168,7 +168,7 @@ void CTestDlg::OnBnClickedButton1()
 	COptionDlg dlg;
 	dlg.DoModal();
 
-	long res = 0;
+	LRESULT res = 0;
 	OnSelchangingTabTesting(NULL, &res);
 
 	switch (cursel)
@@ -196,7 +196,7 @@ void CTestDlg::OnBnClickedButton1()
 
 void CTestDlg::OnSelchangingTabTesting(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	int cursel = m_tabTestStepByStep.GetCurSel();
 	switch (cursel)
 	{
@@ -216,7 +216,7 @@ void CTestDlg::OnSelchangingTabTesting(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CTestDlg::OnBnClickedOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	std::string name = this->m_dlgCameraTesting.m_csDeviceName.GetBuffer(0);
 	//std::wstring wname = ws_techapi::s2ws(name);
 	g_LocalUser.m_wsDeviceName = ws_techapi::s2ws(name);
@@ -227,8 +227,8 @@ void CTestDlg::OnBnClickedOk()
 
 void CTestDlg::OnClickedNext()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂëy
-	long res = 0;
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç y
+	LRESULT res = 0;
 	OnSelchangingTabTesting(NULL, &res);
 
 	int cursel = m_tabTestStepByStep.GetCurSel();

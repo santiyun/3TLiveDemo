@@ -1,4 +1,4 @@
-// DialogAnchorLink.cpp : ʵ���ļ�
+﻿// DialogAnchorLink.cpp : 实现文件
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CDialogAnchorLink �Ի���
+// CDialogAnchorLink 对话框
 
 IMPLEMENT_DYNAMIC(CDialogAnchorLink, CDialogEx)
 
@@ -36,12 +36,12 @@ BEGIN_MESSAGE_MAP(CDialogAnchorLink, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CDialogAnchorLink ��Ϣ��������
+// CDialogAnchorLink 消息处理程序
 
 
 void CDialogAnchorLink::OnBnClickedOk()
 {
-	// TODO: �ڴ����ӿؼ�֪ͨ�����������
+	// TODO: 在此添加控件通知处理程序代码
 	//UpdateData(true);
 	CDialogEx::OnOK();
 }

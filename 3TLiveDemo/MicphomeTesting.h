@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CMicphomeTesting ¶Ô»°¿ò
+// CMicphomeTesting å¯¹è¯æ¡†
 
 class CMicphomeTesting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CMicphomeTesting)
 
 public:
-	CMicphomeTesting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CMicphomeTesting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CMicphomeTesting();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG3 };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 };

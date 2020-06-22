@@ -1,6 +1,6 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ …˙≥…µƒ∞¸∫¨Œƒº˛°£
-// π© 3TLiveDemo.rc  π”√
+Ôªø//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ ÁîüÊàêÁöÑÂåÖÂê´Êñá‰ª∂„ÄÇ
+// ‰æõ 3TLiveDemo.rc ‰ΩøÁî®
 //
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
@@ -26,6 +26,8 @@
 #define IDD_DLG_SERVER_SETTING          162
 #define IDD_DIALOG6                     164
 #define IDD_INPUTBOX                    165
+#define IDD_DIALOG7                     166
+#define IDD_DLG_WINDOWID                166
 #define IDC_EDIT_ROOMID                 1003
 #define IDC_RADIO_M                     1004
 #define IDC_RADIO_B                     1005
@@ -87,10 +89,12 @@
 #define IDC_BTN_AnchorLink              1057
 #define IDC_TAB_TESTING                 1058
 #define IDC_BTN_UPGRADE_CLIENTROLE2     1058
+#define IDC_CHECK_HW                    1058
 #define IDC_COMBO2                      1059
 #define IDC_STATIC_TEST_VIDEO_SHOW      1059
 #define IDC_BTN_MUTE_REMOTE_AUDIO2      1059
 #define IDC_BTN_MUTE_ALL_REMOTE_AUDIO   1059
+#define IDC_CHECK_MIRROR                1059
 #define IDC_COMBO3                      1060
 #define IDC_STATIC_AUDIO_TEXT1          1060
 #define IDC_BUTTON3                     1061
@@ -139,6 +143,7 @@
 #define IDC_BTN_AUDIOEFFECT1            1081
 #define IDC_SLIDER_EARBACK_VOLUME       1082
 #define IDC_SLIDER_LOACAL_VOLUME2       1083
+#define IDC_BTN_SETSEI2                 1083
 #define IDC_SLIDER_LOACAL_VOLUME        1084
 #define IDC_SLIDER_PLAYOUTVOLUME        1085
 #define IDC_SLIDER_PUBLISHVOLUME        1086
@@ -148,6 +153,8 @@
 #define IDC_BTN_AUDIOEFFECT5            1089
 #define IDC_BTN_AUDIOEFFECT4            1090
 #define IDC_BTN_AUDIOEFFECT3            1091
+#define IDC_BTN_SHAREWINDOW             1092
+#define IDC_BTN_PLAY_ONLINE_VIDEO       1093
 #define ID_ACCELERATOR32772             32772
 #define ID_ACCELERATOR32775             32775
 
@@ -155,7 +162,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        166
+#define _APS_NEXT_RESOURCE_VALUE        168
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           101

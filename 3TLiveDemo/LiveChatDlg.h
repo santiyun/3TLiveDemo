@@ -1,21 +1,21 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CLiveChatDlg ¶Ô»°¿ò
+// CLiveChatDlg å¯¹è¯æ¡†
 
 class CLiveChatDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CLiveChatDlg)
 
 public:
-	CLiveChatDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CLiveChatDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CLiveChatDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_CHAT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 };

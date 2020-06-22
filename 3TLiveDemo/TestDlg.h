@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "CameraTesting.h"
 #include "MicphoneTestDlg.h"
@@ -8,24 +8,24 @@
 #include "afxwin.h"
 
 
-// CTestDlg ¶Ô»°¿ò
+// CTestDlg å¯¹è¯æ¡†
 
 class CTestDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CTestDlg)
 
 public:
-	CTestDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CTestDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CTestDlg();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_TEST };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CCameraTesting ¶Ô»°¿ò
+// CCameraTesting å¯¹è¯æ¡†
 
 class CCameraTesting : public CDialogEx
 {
@@ -11,16 +11,16 @@ class CCameraTesting : public CDialogEx
 
 
 public:
-	CCameraTesting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CCameraTesting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CCameraTesting();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_CAMERTEST };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

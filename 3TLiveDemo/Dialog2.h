@@ -1,18 +1,21 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 #include "Common.h"
 #include "afxcmn.h"
 #include "afxbutton.h"
 #include "TTTstruct.h"
 #include "InputBox.h"
-// CDialog2 ¶Ô»°¿ò
-
+#include "TTTRtcEngine.h"
+// CDialog2 å¯¹è¯æ¡†
+using namespace TTTRtc;
 class CDialog2 : public CDialog
+    , public IVideoFrameObserver
+    , public IAudioFrameObserver
 {
 	DECLARE_DYNAMIC(CDialog2)
 
 public:
-	CDialog2(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CDialog2(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CDialog2();
 
 	bool m_bJoinChannel;
@@ -24,13 +27,13 @@ public:
 	VideoCompositingLayout m_vclayout;
 	VideoCompositingLayout m_vclayout2;
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG2 };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -85,6 +88,10 @@ private:
 	void addMixerVideo2(int64_t userID, const char *mediaID, bool isMaster);
 	void delMixerVideo2(int64_t userID, const char *mediaID);
 	void initLayout2();
+    virtual void onPlaybackAudioFrame(int64_t userID, TAudioFrame* frame) override;
+    virtual void onRecordAudioFrame(TAudioFrame* frame) override;
+    virtual void onPlaybackMixedAudioFrame(TAudioFrame* frame) override;
+    virtual void onMixedAudioFrame(TAudioFrame* frame) override;
 public:
 	CString m_csRoomNum;
 	CString m_csClientRole;
@@ -95,22 +102,30 @@ public:
 	CString m_csPushURL;
 
 	int m_TotleParticipants;
-	PARTICIPANTSTREAMS m_mapStreams; //µ±Ç°ÏµÍ³ÖĞ¿ÉÒÔÏÔÊ¾µÄËùÓĞÁ÷£»Ò»¸öÓÃ»§¿ÉÒÔÓĞ¶à¸öÁ÷¡£
+	PARTICIPANTSTREAMS m_mapStreams; //å½“å‰ç³»ç»Ÿä¸­å¯ä»¥æ˜¾ç¤ºçš„æ‰€æœ‰æµï¼›ä¸€ä¸ªç”¨æˆ·å¯ä»¥æœ‰å¤šä¸ªæµã€‚
 	PARTICIPANTS m_mapParticipants;
-	int m_hWndsforClient[50];   //0 ±íÊ¾¸Ã´°¿ÚÎ´±»Õ¼ÓÃ£¬1±íÊ¾±»Õ¼ÓÃ
-	//uid_ttt m_hWndClientUID[6]; //¿ÉÒÔºÏ²¢µ½m_LivingMemberArrayÀïÈ¥£¬±íÊ¾Ã¿¸ö´°¿ÚÏÔÊ¾µÄÄÇ¸öÁõ£»userID²»ÔÙÎ¨Ò»£¬Òª¸Ä³ÉmediaID
+	int m_hWndsforClient[50];   //0 è¡¨ç¤ºè¯¥çª—å£æœªè¢«å ç”¨ï¼Œ1è¡¨ç¤ºè¢«å ç”¨
+	//uid_ttt m_hWndClientUID[6]; //å¯ä»¥åˆå¹¶åˆ°m_LivingMemberArrayé‡Œå»ï¼Œè¡¨ç¤ºæ¯ä¸ªçª—å£æ˜¾ç¤ºçš„é‚£ä¸ªåˆ˜ï¼›userIDä¸å†å”¯ä¸€ï¼Œè¦æ”¹æˆmediaID
 	bool m_ClientAudioStreamMute[10];
 	bool m_ClientVideoStreamMute[10];
-	LivingMemberInfo m_LivingMemberArray[50];  //µ±Ç°ÏÔÊ¾ÔÚ½çÃæµÄÊÓÆµÁ÷
-	std::string m_screenMedia; //ÆÁÄ»¹²ÏíµÄmediaid
-	std::string m_secondMedia; //µÚ¶şÂ·ÊÓÆµµÄmediaid
+	LivingMemberInfo m_LivingMemberArray[50];  //å½“å‰æ˜¾ç¤ºåœ¨ç•Œé¢çš„è§†é¢‘æµ
+	std::string m_screenMedia; //å±å¹•å…±äº«çš„mediaid
+	std::string m_secondMedia; //ç¬¬äºŒè·¯è§†é¢‘çš„mediaid
+    std::string m_windowMedia; //çª—å£å…±äº«çš„mediaid
+
 	bool m_mixing = false;
 	bool m_openedCamera = false;
-	std::string m_mp4Media; //mp4µÄmediaid
-	std::string m_png_url; //Ë®Ó¡ÎÄ¼şµÄÂ·¾¶
+	std::string m_mp4Media; //mp4çš„mediaid
+    std::string m_OnlineMedia; //åœ¨çº¿è§†é¢‘çš„mediaid
+	std::string m_png_url; //æ°´å°æ–‡ä»¶çš„è·¯å¾„
+    std::string m_pushscreen_url;
+
+	bool m_bMuteAllRemoteAudio;
 
 
 	bool m_sharedata;
+    bool m_sharewindow;
+
 	bool m_pushscreen;
 	std::string m_screen_width;
 	std::string m_screen_height;
@@ -124,6 +139,8 @@ public:
 	std::string m_streamUrl2;
 
 	LONGLONG  m_llinkroomid = 0;
+	LONGLONG  m_mix_width = 0;
+	LONGLONG  m_mix_height = 0;
 
 
 	CString m_Video0Info;
@@ -159,6 +176,9 @@ public:
 	CMFCButton m_btnSecondMedia;
 	CMFCButton m_btnEarback;
 	CMFCButton m_btnWatermark;
+    CMFCButton m_btnShareWindow;
+    CMFCButton m_btnPlayOnlineVideo;
+
 
 	CMFCButton m_btnPushScreen;
 	CMFCButton m_btnShowNetStat;
@@ -203,14 +223,6 @@ public:
 	CSliderCtrl m_sliderMp3PushVol;
 
 
-
-
-
-
-
-
-
-
 	afx_msg void OnNMThemeChangedSliderMicvolume(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -223,6 +235,9 @@ public:
 	afx_msg void OnBnClickedAudioEffect3();
 	afx_msg void OnBnClickedAudioEffect4();
 	afx_msg void OnBnClickedAudioEffect5();
+    afx_msg void OnClickedBtnShareWindow();
+    afx_msg void OnClickedBtnPlayOnlineVideo();
+
 
 	
 

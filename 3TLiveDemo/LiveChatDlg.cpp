@@ -1,4 +1,4 @@
-// LiveChatDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// LiveChatDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "LiveChatDlg.h"
 
 
-// CLiveChatDlg ¶Ô»°¿ò
+// CLiveChatDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CLiveChatDlg, CDialog)
 
@@ -30,4 +30,4 @@ BEGIN_MESSAGE_MAP(CLiveChatDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CLiveChatDlg ÏûÏ¢´¦Àí³ÌĞò
+// CLiveChatDlg æ¶ˆæ¯å¤„ç†ç¨‹åº

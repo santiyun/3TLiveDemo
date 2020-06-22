@@ -1,4 +1,4 @@
-// OptionDlg.cpp : й╣ожнд╪Ч
+О╩©// OptionDlg.cpp : Е╝·Г▌╟Ф√┤Д╩╤
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// COptionDlg ╤т╩╟©Р
+// COptionDlg Е╞╧Х╞²Ф║├
 
 IMPLEMENT_DYNAMIC(COptionDlg, CDialogEx)
 
@@ -31,4 +31,4 @@ BEGIN_MESSAGE_MAP(COptionDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// COptionDlg оШо╒╢╕юМЁлпР
+// COptionDlg Ф╤┬Ф│╞Е╓└Г░├Г╗▀Е╨▐

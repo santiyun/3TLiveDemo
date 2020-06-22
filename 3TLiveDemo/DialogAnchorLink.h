@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CDialogAnchorLink ¶Ô»°¿ò
+// CDialogAnchorLink å¯¹è¯æ¡†
 
 class CDialogAnchorLink : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDialogAnchorLink)
 
 public:
-	CDialogAnchorLink(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CDialogAnchorLink(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CDialogAnchorLink();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum {
 		IDD = IDD_DLG_ANCHORLINK};  
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

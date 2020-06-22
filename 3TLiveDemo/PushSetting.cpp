@@ -1,4 +1,4 @@
-// PushSetting.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// PushSetting.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CPushSetting ¶Ô»°¿ò
+// CPushSetting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CPushSetting, CDialogEx)
 
@@ -53,14 +53,14 @@ BEGIN_MESSAGE_MAP(CPushSetting, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CPushSetting ÏûÏ¢´¦Àí³ÌĞò
+// CPushSetting æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CPushSetting::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	m_comboSolution.ResetContent();
 	m_comboSolution.InsertString(0, "480P");
 	m_comboSolution.InsertString(1, "720P");
@@ -73,18 +73,18 @@ BOOL CPushSetting::OnInitDialog()
 	m_comboCodec.SetCurSel(0);
 
 	m_comboAudiofrequnce.ResetContent();
-	m_comboAudiofrequnce.InsertString(0, "48kHz-µ¥ÉùµÀ");
-	m_comboAudiofrequnce.InsertString(1, "44.1kHz-Ë«ÉùµÀ");
+	m_comboAudiofrequnce.InsertString(0, "48kHz-å•å£°é“");
+	m_comboAudiofrequnce.InsertString(1, "44.1kHz-åŒå£°é“");
 	m_comboAudiofrequnce.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CPushSetting::OnCbnSelchangeComboSolution()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	switch (m_comboindex)
 	{

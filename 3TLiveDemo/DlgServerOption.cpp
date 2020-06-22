@@ -1,4 +1,4 @@
-// DlgServerOption.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// DlgServerOption.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 
 extern C3TLocalUserInfo g_LocalUser;
 
-// CDlgServerOption ¶Ô»°¿ò
+// CDlgServerOption å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CDlgServerOption, CDialogEx)
 
@@ -17,7 +17,7 @@ CDlgServerOption::CDlgServerOption(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_SERVER_SETTING, pParent)
 	, m_csAddr(_T(""))
 	, m_iPort(5000)
-	, m_csAppID(_T(ÉêÇëµÄappid))
+	, m_csAppID(_T(è¯·åˆ°å®˜ç½‘ç”³è¯·APPID))
 {
 
 }
@@ -53,17 +53,16 @@ BEGIN_MESSAGE_MAP(CDlgServerOption, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CDlgServerOption ÏûÏ¢´¦Àí³ÌĞò
+// CDlgServerOption æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CDlgServerOption::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	m_comboAppID.ResetContent();
-	m_comboAppID.InsertString(0, Çëµ½¹ÙÍøÉêÇëAPPID);
-	
+	m_comboAppID.InsertString(0, è¯·åˆ°å®˜ç½‘ç”³è¯·APPID);
 
 	this->m_csAppID = g_LocalUser.m_sAppID.c_str();
 	m_iPort = g_LocalUser.m_iPort;
@@ -73,13 +72,13 @@ BOOL CDlgServerOption::OnInitDialog()
 	//UpdateData(true);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CDlgServerOption::OnCbnSelchangeComboAppid()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	CString aaid;
 	int i = m_comboAppID.GetCurSel();
@@ -93,23 +92,23 @@ void CDlgServerOption::OnCbnSelchangeComboAppid()
 
 void CDlgServerOption::OnEnKillfocusEdtServerPort()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 }
 
 
 void CDlgServerOption::OnEnKillfocusEdtServerAddr()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 }
 
 
 void CDlgServerOption::OnThemechangedComboAppid(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// ¸Ã¹¦ÄÜÒªÇóÊ¹ÓÃ Windows XP »ò¸ü¸ß°æ±¾¡£
-	// ·ûºÅ _WIN32_WINNT ±ØĞë >= 0x0501¡£
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// è¯¥åŠŸèƒ½è¦æ±‚ä½¿ç”¨ Windows XP æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚
+	// ç¬¦å· _WIN32_WINNT å¿…é¡» >= 0x0501ã€‚
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	*pResult = 0;
 }

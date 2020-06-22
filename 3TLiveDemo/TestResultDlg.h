@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CTestResultDlg ¶Ô»°¿ò
+// CTestResultDlg å¯¹è¯æ¡†
 
 class CTestResultDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CTestResultDlg)
 
 public:
-	CTestResultDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CTestResultDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CTestResultDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_RESULT };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

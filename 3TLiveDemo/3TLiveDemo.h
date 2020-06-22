@@ -1,19 +1,19 @@
-
-// 3TLiveDemo.h : PROJECT_NAME Ó¦ÓÃ³ÌĞòµÄÖ÷Í·ÎÄ¼ş
+ï»¿
+// 3TLiveDemo.h : PROJECT_NAME åº”ç”¨ç¨‹åºçš„ä¸»å¤´æ–‡ä»¶
 //
 
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error "ÔÚ°üº¬´ËÎÄ¼şÖ®Ç°°üº¬¡°stdafx.h¡±ÒÔÉú³É PCH ÎÄ¼ş"
+	#error "åœ¨åŒ…å«æ­¤æ–‡ä»¶ä¹‹å‰åŒ…å«â€œstdafx.hâ€ä»¥ç”Ÿæˆ PCH æ–‡ä»¶"
 #endif
 
-#include "resource.h"		// Ö÷·ûºÅ
+#include "resource.h"		// ä¸»ç¬¦å·
 //#include "vld.h"
 
 
 // CMy3TLiveDemoApp:
-// ÓĞ¹Ø´ËÀàµÄÊµÏÖ£¬Çë²ÎÔÄ 3TLiveDemo.cpp
+// æœ‰å…³æ­¤ç±»çš„å®ç°ï¼Œè¯·å‚é˜… 3TLiveDemo.cpp
 //
 
 class CMy3TLiveDemoApp : public CWinAppEx
@@ -21,11 +21,11 @@ class CMy3TLiveDemoApp : public CWinAppEx
 public:
 	CMy3TLiveDemoApp();
 
-// ÖØĞ´
+// é‡å†™
 	public:
 	virtual BOOL InitInstance();
 
-// ÊµÏÖ
+// å®ç°
 
 	DECLARE_MESSAGE_MAP()
 };

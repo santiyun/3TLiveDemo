@@ -1,4 +1,4 @@
-// MicphomeTesting.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// MicphomeTesting.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CMicphomeTesting ¶Ô»°¿ò
+// CMicphomeTesting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CMicphomeTesting, CDialogEx)
 
@@ -31,4 +31,4 @@ BEGIN_MESSAGE_MAP(CMicphomeTesting, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMicphomeTesting ÏûÏ¢´¦Àí³ÌĞò
+// CMicphomeTesting æ¶ˆæ¯å¤„ç†ç¨‹åº

@@ -1,27 +1,27 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "Common.h"
 
 
-// CSpeakerTesting ¶Ô»°¿ò
+// CSpeakerTesting å¯¹è¯æ¡†
 
 class CSpeakerTesting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSpeakerTesting)
 
 public:
-	CSpeakerTesting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CSpeakerTesting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CSpeakerTesting();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG4 };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

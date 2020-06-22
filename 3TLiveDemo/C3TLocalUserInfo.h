@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "common.h"
 
@@ -20,6 +20,8 @@ public:
 	std::string m_pushUrl;
 	int m_videoProfile;
 	bool m_bUserHighQualityAudio;
+    bool m_bEnable_hwaccel;
+    bool m_bEnable_mirror;
 	int m_bitrate;
 	int m_framerate;
 
@@ -34,7 +36,7 @@ public:
 	bool	m_bLocalAudioDevice;
 
 	VideoDeviceInfo m_vDeviceArray[10];
-	int		m_vDeviceCount;  //µ±Ç°Ñ¡ÔñµÄÉè±¸×ÜÊı
+	int		m_vDeviceCount;  //å½“å‰é€‰æ‹©çš„è®¾å¤‡æ€»æ•°
 
 	std::string m_sAddress;
 	int m_iPort;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "C3TEngineEventHandler.h"
 #include "Common.h"
 
@@ -57,7 +57,7 @@ void C3TEngineEventHandler::onError(int err, const char* msg)
 
 }
 
-void C3TEngineEventHandler::onMixerVideoCreate(const char *mixerUrl, const char *mediaID)
+void C3TEngineEventHandler::onMixerVideoCreate(const char *mediaID, const char *mixerUrl)
 {
 	RemoteMixVideoConfig* cfg = new RemoteMixVideoConfig;
 	memset(cfg, 0, sizeof(RemoteMixVideoConfig));
@@ -319,6 +319,7 @@ void C3TEngineEventHandler::onSetSEI(const char* SEI)
 }
 void C3TEngineEventHandler::onRTMPsenderror(const char * err)
 {
+    Sleep(200);
 	if (m_hMainWnd != NULL)
 		::PostMessage(m_hMainWnd, WM_ON_RTMP_SENDERROR, (WPARAM)0, 0);
 }

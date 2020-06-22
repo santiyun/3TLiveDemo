@@ -1,4 +1,4 @@
-// SpeakerTesting.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// SpeakerTesting.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -14,7 +14,7 @@ extern IRtcEngine* g_TTTEngine;
 extern C3TLocalUserInfo g_LocalUser;
 
 
-// CSpeakerTesting ¶Ô»°¿ò
+// CSpeakerTesting å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CSpeakerTesting, CDialogEx)
 
@@ -57,22 +57,22 @@ BEGIN_MESSAGE_MAP(CSpeakerTesting, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSpeakerTesting ÏûÏ¢´¦Àí³ÌĞò
+// CSpeakerTesting æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CSpeakerTesting::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	int num = 0;
 	 num = g_TTTEngine->getNumOfPlayoutDevices();//GetNumOfPlayoutDevices(&num);
 	if (num > 0)
 	{
 		for (int index = 0; index < num; index++)
 		{
-			char szDeviceName[256] = "";
-			char szDeviceID[256] = "";
+			char szDeviceName[128] = "";
+			char szDeviceID[128] = "";
 			int theResult = g_TTTEngine->getPlayoutDeviceName(index, szDeviceName, szDeviceID);
 			std::string deviceName = szDeviceName;
 			std::wstring wdeviceName = ws_techapi::utf82ws(deviceName);
@@ -96,13 +96,13 @@ BOOL CSpeakerTesting::OnInitDialog()
 	m_sliderVolumeSetting.SetPos(160);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
 void CSpeakerTesting::OnSelchangeSpeaker()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(true);
 	g_TTTEngine->stopPlaybackDeviceTest();
 }
@@ -125,10 +125,10 @@ void CSpeakerTesting::OnBnClickedPlayMusic()
 		g_TTTEngine->setPlayoutDevice(m_comboSpeakerEnum.GetCurSel());
 		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
 		GetModuleFileName(NULL, szFilePath, MAX_PATH);
-		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // É¾³ıÎÄ¼şÃû£¬Ö»»ñµÃÂ·¾¶×Ö´®
+		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // åˆ é™¤æ–‡ä»¶åï¼Œåªè·å¾—è·¯å¾„å­—ä¸²
 		CString str_url = szFilePath;
-		//str_url.Append("TestSnd.wav");
-		str_url.Append("01.mp3");
+		//str_url.Append("..\\resources\\TestSnd.wav");
+		str_url.Append("..\\resources\\01.mp3");
 
 		std::string s_utf8 = ws_techapi::s2utf8(str_url.GetBuffer(str_url.GetLength()));
 
@@ -142,26 +142,26 @@ void CSpeakerTesting::OnBnClickedPlayMusic()
 
 void CSpeakerTesting::OnThemechangedSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// ¸Ã¹¦ÄÜÒªÇóÊ¹ÓÃ Windows XP »ò¸ü¸ß°æ±¾¡£
-	// ·ûºÅ _WIN32_WINNT ±ØĞë >= 0x0501¡£
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// è¯¥åŠŸèƒ½è¦æ±‚ä½¿ç”¨ Windows XP æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚
+	// ç¬¦å· _WIN32_WINNT å¿…é¡» >= 0x0501ã€‚
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	*pResult = 0;
 }
 
 
 void CSpeakerTesting::OnThumbposchangingSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// ´Ë¹¦ÄÜÒªÇó Windows Vista »ò¸ü¸ß°æ±¾¡£
-	// _WIN32_WINNT ·ûºÅ±ØĞë >= 0x0600¡£
+	// æ­¤åŠŸèƒ½è¦æ±‚ Windows Vista æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚
+	// _WIN32_WINNT ç¬¦å·å¿…é¡» >= 0x0600ã€‚
 	NMTRBTHUMBPOSCHANGING *pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING *>(pNMHDR);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	*pResult = 0;
 }
 
 
 void CSpeakerTesting::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	int volume = m_sliderVolumeSetting.GetPos();
 	g_TTTEngine->setSpeakerVolume(volume);
 	//SetSpeakerVolume(volume);
@@ -172,7 +172,7 @@ void CSpeakerTesting::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CSpeakerTesting::OnBnClickedMfcbutton1()
 {
 	static bool bPause = false;
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (g_TTTEngine != NULL)
 	{
 		if (bPause == false)

@@ -1,9 +1,0 @@
-<xml>
-    <path>log</path>
-    <clientsdk>
-        <level>5</level>
-        <basename>sdk</basename>
-        <size>102400</size>
-    </clientsdk>
-</xml>
-

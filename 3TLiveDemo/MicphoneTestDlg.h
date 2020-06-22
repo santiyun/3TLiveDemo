@@ -1,27 +1,27 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "Common.h"
 
 
-// CMicphoneTestDlg ¶Ô»°¿ò
+// CMicphoneTestDlg å¯¹è¯æ¡†
 
 class CMicphoneTestDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CMicphoneTestDlg)
 
 public:
-	CMicphoneTestDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CMicphoneTestDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CMicphoneTestDlg();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_MICPHONETEST };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

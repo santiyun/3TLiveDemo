@@ -1,4 +1,4 @@
-// TestResultDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// TestResultDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,15 +7,15 @@
 #include "afxdialogex.h"
 
 
-// CTestResultDlg ¶Ô»°¿ò
+// CTestResultDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CTestResultDlg, CDialogEx)
 
 CTestResultDlg::CTestResultDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_RESULT, pParent)
-	, m_csCameraResult(_T("Ê§°Ü"))
-	, m_csMicResult(_T("Ê§°Ü"))
-	, m_csSpeakerResult(_T("Ê§°Ü"))
+	, m_csCameraResult(_T("å¤±è´¥"))
+	, m_csMicResult(_T("å¤±è´¥"))
+	, m_csSpeakerResult(_T("å¤±è´¥"))
 {
 
 }
@@ -38,24 +38,24 @@ BEGIN_MESSAGE_MAP(CTestResultDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CTestResultDlg ÏûÏ¢´¦Àí³ÌĞò
+// CTestResultDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CTestResultDlg::OnEnChangeEdit1()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ı·ÇÖØĞ´ CDialogEx::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œå®ƒå°†ä¸
+	// å‘é€æ­¤é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialogEx::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
 void CTestResultDlg::showResult(bool camera, bool mic, bool speaker)
 {
-	m_csCameraResult = camera ? "³É¹¦" : "Ê§°Ü";
-	m_csMicResult = mic ? "³É¹¦" : "Ê§°Ü";
-	m_csSpeakerResult = speaker ? "³É¹¦" : "Ê§°Ü";
+	m_csCameraResult = camera ? "æˆåŠŸ" : "å¤±è´¥";
+	m_csMicResult = mic ? "æˆåŠŸ" : "å¤±è´¥";
+	m_csSpeakerResult = speaker ? "æˆåŠŸ" : "å¤±è´¥";
 	UpdateData(false);
 	return;
 }

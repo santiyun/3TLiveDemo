@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CLocalSetting ¶Ô»°¿ò
+// CLocalSetting å¯¹è¯æ¡†
 
 class CLocalSetting : public CDialogEx
 {
 	DECLARE_DYNAMIC(CLocalSetting)
 
 public:
-	CLocalSetting(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CLocalSetting(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CLocalSetting();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_LOCALSETTING };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -31,8 +31,13 @@ public:
 	CEdit m_edtRateCtrl;
 	CEdit m_edtFramerateCtrl;
 	BOOL m_bUserHighQualityAudio;
+    BOOL m_bEnable_hwaccel;
+    BOOL m_bEnable_mirror;
 	afx_msg void OnBnClickedCheck1();
+    afx_msg void OnBnClickedCheckHW();
 	CButton m_chkUseHighQualityAudio;
+    CButton m_chkEnable_hwaccel;
+    CButton m_chkEnable_mirror;
 	int m_bitrate;
 	int m_framerate;
 	afx_msg void OnEnKillfocusEdit2();

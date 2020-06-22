@@ -1,4 +1,4 @@
-// MicphoneTestDlg.cpp : ÊµÏÖÎÄ¼þ
+ï»¿// MicphoneTestDlg.cpp : å®žçŽ°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@ using namespace TTTRtc;
 extern IRtcEngine* g_TTTEngine;
 
 extern C3TLocalUserInfo g_LocalUser;
-// CMicphoneTestDlg ¶Ô»°¿ò
+// CMicphoneTestDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CMicphoneTestDlg, CDialogEx)
 
@@ -51,14 +51,14 @@ BEGIN_MESSAGE_MAP(CMicphoneTestDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CMicphoneTestDlg ÏûÏ¢´¦Àí³ÌÐò
+// CMicphoneTestDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CMicphoneTestDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	int num = 0;
 	num = g_TTTEngine->getNumOfRecordingDevices();//GetNumOfRecordingDevices(&num);
 	if (num > 0)
@@ -84,7 +84,7 @@ BOOL CMicphoneTestDlg::OnInitDialog()
 	m_volumeShowCtrl.SetRange(0, 9);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-				  // Òì³£: OCX ÊôÐÔÒ³Ó¦·µ»Ø FALSE
+				  // å¼‚å¸¸: OCX å±žæ€§é¡µåº”è¿”å›ž FALSE
 }
 
 

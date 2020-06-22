@@ -1,0 +1,10 @@
+<xml>
+    <path>log</path>
+    <clientsdk>
+        <level>4</level>
+        <basename>sdk</basename>
+        <size>102400</size>
+	<outputdebugstring>0</outputdebugstring>
+    </clientsdk>
+</xml>
+

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Common.h"
 #include <sstream>
 #include <regex>
@@ -8,11 +8,11 @@ using namespace std;
 bool isdigit(std::string strValue)
 {
 	//bool bValid = false;
-	//¶¨ÒåÒ»¸öÕıÔò±í´ïÊ½ ,Êı×Ö
+	//å®šä¹‰ä¸€ä¸ªæ­£åˆ™è¡¨è¾¾å¼ ,æ•°å­—
 	regex repPattern("^[0-9]*$", regex_constants::extended);
-	// ÉùÃ÷Æ¥Åä½á¹û±äÁ¿
+	// å£°æ˜åŒ¹é…ç»“æœå˜é‡
 	match_results<string::const_iterator> rerResult;
-	// ½øĞĞÆ¥Åä
+	// è¿›è¡ŒåŒ¹é…
 	bool bValid = regex_match(strValue, rerResult, repPattern);
 	return bValid;
 }

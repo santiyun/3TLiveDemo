@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CDlgServerOption ¶Ô»°¿ò
+// CDlgServerOption å¯¹è¯æ¡†
 
 class CDlgServerOption : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDlgServerOption)
 
 public:
-	CDlgServerOption(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CDlgServerOption(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CDlgServerOption();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_SERVER_SETTING };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
